@@ -4,6 +4,7 @@ from app.api.root import router as root_router
 from app.api.health import router as health_router
 from app.api.about import router as about_router
 from app.api.users import router as users_router
+from app.api.auth import router as auth_router
 
 app = FastAPI(
     title="MyCropAI API",
@@ -16,3 +17,4 @@ app.include_router(root_router)
 app.include_router(health_router)
 app.include_router(about_router)
 app.include_router(users_router)
+app.include_router(auth_router)
