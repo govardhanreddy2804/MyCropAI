@@ -7,3 +7,11 @@ class UserAlreadyExistsError(AppException):
 
 class InvalidCredentialsError(AppException):
     """Raised when login credentials are invalid."""
+
+
+class InvalidRefreshTokenError(AppException):
+    """Raised when a refresh token is invalid."""
+
+
+class RefreshTokenReuseError(AppException):
+    """Raised when a revoked refresh token is reused."""
