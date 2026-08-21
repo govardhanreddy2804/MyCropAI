@@ -10,6 +10,12 @@ from app.repositories.user import (
 from sqlalchemy.exc import IntegrityError
 from app.core.exceptions import UserAlreadyExistsError
 
+from app.core.exceptions import (
+    InvalidCredentialsError,
+)
+from app.core.security import verify_password
+from app.repositories.user import get_user_by_email
+
 def register_user(
     db: Session,
     name: str,
@@ -49,3 +55,34 @@ def register_user(
         raise UserAlreadyExistsError(
             "A user with this email already exists"
         ) from None
+
+def authenticate_user(
+    db: Session,
+    email: str,
+    password: str,
+) -> User:
+
+    user = get_user_by_email(
+        db,
+        email,
+    )
+
+    if user is None:
+        raise InvalidCredentialsError(
+            "Invalid email or password"
+        )
+
+    if not user.is_active:
+        raise InvalidCredentialsError(
+            "Invalid email or password"
+        )
+
+    if not verify_password(
+        password,
+        user.password_hash,
+    ):
+        raise InvalidCredentialsError(
+            "Invalid email or password"
+        )
+
+    return user
