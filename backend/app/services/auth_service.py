@@ -16,6 +16,19 @@ from app.core.exceptions import (
 from app.core.security import verify_password
 from app.repositories.user import get_user_by_email
 
+from datetime import datetime, timedelta, timezone
+
+from app.core.tokens import (
+    generate_refresh_token,
+    hash_refresh_token,
+)
+from app.models.refresh_session import RefreshSession
+from app.repositories.refresh_session import (
+    create_refresh_session,
+)
+
+from app.core.config import settings
+
 def register_user(
     db: Session,
     name: str,
@@ -86,3 +99,34 @@ def authenticate_user(
         )
 
     return user
+
+def create_refresh_session_for_user(
+    db: Session,
+    user: User,
+) -> str:
+
+    raw_token = generate_refresh_token()
+
+    token_hash = hash_refresh_token(
+        raw_token
+    )
+
+    expires_at = (
+        datetime.now(timezone.utc)
+        + timedelta(
+            days=settings.refresh_token_expire_days
+        )
+    )
+
+    session = RefreshSession(
+        user_id=user.id,
+        token_hash=token_hash,
+        expires_at=expires_at,
+    )
+
+    create_refresh_session(
+        db,
+        session,
+    )
+
+    return raw_token
