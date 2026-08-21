@@ -7,6 +7,9 @@ from app.repositories.user import (
     get_user_by_email,
 )
 
+from sqlalchemy.exc import IntegrityError
+from app.core.exceptions import UserAlreadyExistsError
+
 def register_user(
     db: Session,
     name: str,
@@ -20,7 +23,7 @@ def register_user(
     )
 
     if existing_user:
-        raise ValueError(
+        raise UserAlreadyExistsError(
             "A user with this email already exists"
         )
 
@@ -32,4 +35,17 @@ def register_user(
         password_hash=password_hash,
     )
 
-    return create_user(db, user)
+    try:
+        create_user(db, user)
+
+        db.commit()
+        db.refresh(user)
+
+        return user
+
+    except IntegrityError:
+        db.rollback()
+
+        raise UserAlreadyExistsError(
+            "A user with this email already exists"
+        ) from None
