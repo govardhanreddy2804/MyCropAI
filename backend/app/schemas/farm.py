@@ -36,3 +36,26 @@ class FarmResponse(BaseModel):
     location: str
     area: float
     soil_type: str | None
+
+class FarmUpdate(BaseModel):
+    name: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=100,
+    )
+
+    location: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=255,
+    )
+
+    area: float | None = Field(
+        default=None,
+        gt=0,
+    )
+
+    soil_type: str | None = Field(
+        default=None,
+        max_length=100,
+    )

@@ -38,3 +38,16 @@ def get_farms_by_owner(
     return list(
         db.scalars(statement).all()
     )
+
+def update_farm(
+    db: Session,
+    farm: Farm,
+    values: dict,
+) -> Farm:
+
+    for field, value in values.items():
+        setattr(farm, field, value)
+
+    db.flush()
+
+    return farm
