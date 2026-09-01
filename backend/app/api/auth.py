@@ -198,8 +198,14 @@ def logout_all(
     db,
     current_user.id,
 )
-
     
+    now = datetime.now(timezone.utc)
+
+    for session in sessions:
+        session.revoked_at = now
+
+    db.commit()
+
 
     response.delete_cookie(
     key=settings.refresh_cookie_name,

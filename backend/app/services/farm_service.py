@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 from app.models.farm import Farm
 from app.repositories.farm import (
     create_farm,
+    delete_farm,
     get_farm_by_id,
     get_farms_by_owner,
+    update_farm,
 )
 
 def create_user_farm(
@@ -42,3 +44,32 @@ def get_user_farms(
         db,
         user_id,
     )
+
+def update_user_farm(
+    db: Session,
+    farm: Farm,
+    values: dict,
+) -> Farm:
+
+    update_farm(
+        db=db,
+        farm=farm,
+        values=values,
+    )
+
+    db.commit()
+    db.refresh(farm)
+
+    return farm
+
+def delete_user_farm(
+    db: Session,
+    farm: Farm,
+) -> None:
+
+    delete_farm(
+        db=db,
+        farm=farm,
+    )
+
+    db.commit()

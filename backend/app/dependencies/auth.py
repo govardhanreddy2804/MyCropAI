@@ -9,14 +9,24 @@ from app.core.jwt import decode_token
 from app.dependencies.database import get_db
 from app.repositories.user import get_user_by_id
 
-bearer_scheme = HTTPBearer()
+bearer_scheme = HTTPBearer(
+    auto_error=False
+)
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(
+    credentials: HTTPAuthorizationCredentials | None = Depends(
         bearer_scheme
     ),
     db: Session = Depends(get_db),
 ):
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={
+                "WWW-Authenticate": "Bearer"
+            },
+        )
     token = credentials.credentials
 
     try:

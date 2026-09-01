@@ -3,15 +3,10 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class FarmCreate(BaseModel):
+class FieldCreate(BaseModel):
     name: str = Field(
         min_length=1,
         max_length=100,
-    )
-
-    location: str = Field(
-        min_length=1,
-        max_length=255,
     )
 
     area: float = Field(
@@ -23,30 +18,17 @@ class FarmCreate(BaseModel):
         max_length=100,
     )
 
-
-class FarmResponse(BaseModel):
-    model_config = ConfigDict(
-        from_attributes=True
+    location: str | None = Field(
+        default=None,
+        max_length=255,
     )
 
-    id: UUID
-    owner_id: UUID
-    name: str
-    location: str
-    area: float
-    soil_type: str | None
 
-class FarmUpdate(BaseModel):
+class FieldUpdate(BaseModel):
     name: str | None = Field(
         default=None,
         min_length=1,
         max_length=100,
-    )
-
-    location: str | None = Field(
-        default=None,
-        min_length=1,
-        max_length=255,
     )
 
     area: float | None = Field(
@@ -58,3 +40,21 @@ class FarmUpdate(BaseModel):
         default=None,
         max_length=100,
     )
+
+    location: str | None = Field(
+        default=None,
+        max_length=255,
+    )
+
+
+class FieldResponse(BaseModel):
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
+    id: UUID
+    farm_id: UUID
+    name: str
+    area: float
+    soil_type: str | None
+    location: str | None

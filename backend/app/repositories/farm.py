@@ -51,3 +51,11 @@ def update_farm(
     db.flush()
 
     return farm
+
+def delete_farm(
+    db: Session,
+    farm: Farm,
+) -> None:
+
+    db.delete(farm)
+    db.flush()
