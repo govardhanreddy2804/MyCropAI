@@ -502,3 +502,269 @@ def test_farmer_cannot_access_another_farm_field(
     )
 
     assert response.status_code == 403
+
+
+def test_create_crop(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Green Valley",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    farm = farm_response.json()
+
+    field_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "North Field",
+            "area": 2,
+        },
+    )
+
+    field = field_response.json()
+
+    response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops",
+        json={
+            "crop_type": "Rice",
+            "variety": "Basmati",
+            "planting_date": "2026-06-01",
+            "expected_harvest_date": "2026-10-01",
+        },
+    )
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["crop_type"] == "Rice"
+    assert data["variety"] == "Basmati"
+    assert data["field_id"] == field["id"]
+    assert data["status"] == "planned"
+
+def test_list_crops(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Green Valley",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    farm = farm_response.json()
+
+    field_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "North Field",
+            "area": 2,
+        },
+    )
+
+    field = field_response.json()
+
+    for crop_name in ["Rice", "Wheat"]:
+        authenticated_client.post(
+            f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops",
+            json={
+                "crop_type": crop_name,
+                "planting_date": "2026-06-01",
+            },
+        )
+
+    response = authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 2
+    assert data[0]["crop_type"] == "Rice"
+    assert data[1]["crop_type"] == "Wheat"
+
+def test_get_crop(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Green Valley",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    farm = farm_response.json()
+
+    field_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "North Field",
+            "area": 2,
+        },
+    )
+
+    field = field_response.json()
+
+    crop_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops",
+        json={
+            "crop_type": "Rice",
+            "planting_date": "2026-06-01",
+        },
+    )
+
+    crop = crop_response.json()
+
+    response = authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops/{crop['id']}"
+    )
+
+    assert response.status_code == 200
+    assert response.json()["id"] == crop["id"]
+
+def test_update_crop(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Green Valley",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    farm = farm_response.json()
+
+    field_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "North Field",
+            "area": 2,
+        },
+    )
+
+    field = field_response.json()
+
+    crop_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops",
+        json={
+            "crop_type": "Rice",
+            "planting_date": "2026-06-01",
+        },
+    )
+
+    crop = crop_response.json()
+
+    response = authenticated_client.put(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops/{crop['id']}",
+        json={
+            "crop_type": "Wheat",
+            "status": "active",
+        },
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["crop_type"] == "Wheat"
+    assert data["status"] == "active"
+
+def test_delete_crop(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Green Valley",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    farm = farm_response.json()
+
+    field_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "North Field",
+            "area": 2,
+        },
+    )
+
+    field = field_response.json()
+
+    crop_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops",
+        json={
+            "crop_type": "Rice",
+            "planting_date": "2026-06-01",
+        },
+    )
+
+    crop = crop_response.json()
+
+    response = authenticated_client.delete(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops/{crop['id']}"
+    )
+
+    assert response.status_code == 204
+
+    get_response = authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops/{crop['id']}"
+    )
+
+    assert get_response.status_code == 404
+
+def test_farmer_cannot_access_another_farm_crop(
+    authenticated_client,
+    second_authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Farmer A Farm",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    farm = farm_response.json()
+
+    field_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "Private Field",
+            "area": 2,
+        },
+    )
+
+    field = field_response.json()
+
+    crop_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops",
+        json={
+            "crop_type": "Rice",
+            "planting_date": "2026-06-01",
+        },
+    )
+
+    crop = crop_response.json()
+
+    response = second_authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/crops/{crop['id']}"
+    )
+
+    assert response.status_code == 403
