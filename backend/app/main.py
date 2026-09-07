@@ -8,6 +8,7 @@ from app.api.auth import router as auth_router
 from app.api.farms import router as farms_router
 from app.api.fields import router as fields_router
 from app.api.crops import router as crops_router
+from app.api.farm_overview import router as farm_overview_router
 
 from app.core.exceptions import UserAlreadyExistsError
 from app.core.exception_handlers import (
@@ -29,6 +30,7 @@ app.include_router(auth_router)
 app.include_router(farms_router)
 app.include_router(fields_router)
 app.include_router(crops_router)
+app.include_router(farm_overview_router)
 
 app.add_exception_handler(
     UserAlreadyExistsError,

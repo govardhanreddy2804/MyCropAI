@@ -1,10 +1,9 @@
 from uuid import UUID, uuid4
 
 from sqlalchemy import Float, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
-
 
 class Farm(Base):
     __tablename__ = "farms"
@@ -41,4 +40,9 @@ class Farm(Base):
     soil_type: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
+    )
+
+    fields: Mapped[list["Field"]] = relationship(
+        back_populates="farm",
+        cascade="all, delete-orphan",
     )

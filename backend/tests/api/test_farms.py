@@ -768,3 +768,211 @@ def test_farmer_cannot_access_another_farm_crop(
     )
 
     assert response.status_code == 403
+
+def test_get_farm_overview(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Digital Twin Farm",
+            "location": "Karnataka",
+            "area": 10,
+            "soil_type": "Loamy",
+        },
+    )
+
+    assert farm_response.status_code == 201
+
+    farm = farm_response.json()
+
+    field_a_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "Field A",
+            "area": 4,
+            "soil_type": "Loamy",
+            "location": "North",
+        },
+    )
+
+    assert field_a_response.status_code == 201
+
+    field_a = field_a_response.json()
+
+    field_b_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "Field B",
+            "area": 6,
+            "soil_type": "Clay",
+            "location": "South",
+        },
+    )
+
+    assert field_b_response.status_code == 201
+
+    field_b = field_b_response.json()
+
+    # Two crops in Field A
+    for crop_type in ["Rice", "Wheat"]:
+        response = authenticated_client.post(
+            f"/api/v1/farms/{farm['id']}/fields/{field_a['id']}/crops",
+            json={
+                "crop_type": crop_type,
+                "planting_date": "2026-06-01",
+            },
+        )
+
+        assert response.status_code == 201
+
+    # One crop in Field B
+    crop_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields/{field_b['id']}/crops",
+        json={
+            "crop_type": "Maize",
+            "variety": "Hybrid",
+            "planting_date": "2026-06-15",
+        },
+    )
+
+    assert crop_response.status_code == 201
+
+    response = authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/overview"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["id"] == farm["id"]
+    assert data["name"] == "Digital Twin Farm"
+    assert data["location"] == "Karnataka"
+    assert data["area"] == 10
+    assert data["soil_type"] == "Loamy"
+
+    assert data["field_count"] == 2
+    assert data["crop_count"] == 3
+
+    assert len(data["fields"]) == 2
+
+    assert data["fields"][0]["name"] == "Field A"
+    assert len(data["fields"][0]["crops"]) == 2
+
+    assert data["fields"][1]["name"] == "Field B"
+    assert len(data["fields"][1]["crops"]) == 1
+
+    assert data["fields"][1]["crops"][0]["crop_type"] == "Maize"
+
+
+
+
+
+def test_farmer_cannot_access_another_farm_overview(
+    authenticated_client,
+    second_authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Private Farm",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    assert farm_response.status_code == 201
+
+    farm = farm_response.json()
+
+    response = second_authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/overview"
+    )
+
+    assert response.status_code == 403
+
+
+def test_get_missing_farm_overview(
+    authenticated_client,
+):
+    farm_id = uuid4()
+
+    response = authenticated_client.get(
+        f"/api/v1/farms/{farm_id}/overview"
+    )
+
+    assert response.status_code == 404
+
+
+def test_farm_overview_with_no_fields(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Empty Farm",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    assert farm_response.status_code == 201
+
+    farm = farm_response.json()
+
+    response = authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/overview"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["field_count"] == 0
+    assert data["crop_count"] == 0
+    assert data["fields"] == []
+
+
+def test_farm_overview_with_field_without_crops(
+    authenticated_client,
+):
+    farm_response = authenticated_client.post(
+        "/api/v1/farms",
+        json={
+            "name": "Field Only Farm",
+            "location": "Karnataka",
+            "area": 5,
+        },
+    )
+
+    assert farm_response.status_code == 201
+
+    farm = farm_response.json()
+
+    field_response = authenticated_client.post(
+        f"/api/v1/farms/{farm['id']}/fields",
+        json={
+            "name": "Empty Field",
+            "area": 2,
+            "soil_type": "Loamy",
+            "location": "North",
+        },
+    )
+
+    assert field_response.status_code == 201
+
+    response = authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/overview"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["field_count"] == 1
+    assert data["crop_count"] == 0
+    assert len(data["fields"]) == 1
+
+    assert data["fields"][0]["name"] == "Empty Field"
+    assert data["fields"][0]["crops"] == []

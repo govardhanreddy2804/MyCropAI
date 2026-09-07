@@ -2,11 +2,10 @@ from datetime import date
 from uuid import UUID, uuid4
 
 from sqlalchemy import Date, Enum, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 from app.models.enums import CropStatus
-
 
 class Crop(Base):
     __tablename__ = "crops"
@@ -49,4 +48,8 @@ class Crop(Base):
         Enum(CropStatus),
         nullable=False,
         default=CropStatus.PLANNED,
+    )
+
+    field: Mapped["Field"] = relationship(
+        back_populates="crops",
     )
