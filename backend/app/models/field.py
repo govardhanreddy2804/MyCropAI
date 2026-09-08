@@ -50,3 +50,8 @@ class Field(Base):
         back_populates="field",
         cascade="all, delete-orphan",
     )
+
+    observations: Mapped[list["AgriculturalObservation"]] = relationship(
+    back_populates="field",
+    cascade="all, delete-orphan",
+)
