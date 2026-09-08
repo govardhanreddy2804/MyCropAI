@@ -13,6 +13,9 @@ from app.repositories.observation import (
     get_observations_by_field,
 )
 
+from app.services.observation_resolver import (
+    resolve_best_observations,
+)
 
 def create_field_observation(
     db: Session,
@@ -79,3 +82,16 @@ def delete_field_observation(
     )
 
     db.commit()
+
+def get_best_field_observations(
+    db: Session,
+    field_id: UUID,
+):
+    observations = get_observations_by_field(
+        db=db,
+        field_id=field_id,
+    )
+
+    return resolve_best_observations(
+        observations
+    )

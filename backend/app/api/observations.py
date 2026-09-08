@@ -5,18 +5,24 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.auth import get_current_user
 from app.dependencies.database import get_db
+
 from app.models.user import User
+
 from app.policies.farm_policy import require_farm_access
+
 from app.repositories.farm import get_farm_by_id
 from app.repositories.field import get_field_by_id
 from app.repositories.observation import get_observation_by_id
+
 from app.schemas.observation import (
     ObservationCreate,
     ObservationResponse,
 )
+
 from app.services.observation import (
     create_field_observation,
     delete_field_observation,
+    get_best_field_observations,
     get_field_observations,
 )
 
@@ -26,6 +32,10 @@ router = APIRouter(
     tags=["Agricultural Observations"],
 )
 
+
+# ============================================================
+# CREATE OBSERVATION
+# ============================================================
 
 @router.post(
     "/{farm_id}/fields/{field_id}/observations",
@@ -45,8 +55,6 @@ def create_observation(
     )
 
     if farm is None:
-        # from fastapi import HTTPException
-
         raise HTTPException(
             status_code=404,
             detail="Farm not found",
@@ -63,8 +71,6 @@ def create_observation(
     )
 
     if field is None or field.farm_id != farm.id:
-        # from fastapi import HTTPException
-
         raise HTTPException(
             status_code=404,
             detail="Field not found",
@@ -82,6 +88,10 @@ def create_observation(
     )
 
 
+# ============================================================
+# LIST OBSERVATIONS
+# ============================================================
+
 @router.get(
     "/{farm_id}/fields/{field_id}/observations",
     response_model=list[ObservationResponse],
@@ -98,8 +108,6 @@ def list_observations(
     )
 
     if farm is None:
-        # from fastapi import HTTPException
-
         raise HTTPException(
             status_code=404,
             detail="Farm not found",
@@ -116,8 +124,6 @@ def list_observations(
     )
 
     if field is None or field.farm_id != farm.id:
-        # from fastapi import HTTPException
-
         raise HTTPException(
             status_code=404,
             detail="Field not found",
@@ -128,6 +134,60 @@ def list_observations(
         field_id=field_id,
     )
 
+
+# ============================================================
+# BEST OBSERVATIONS
+# IMPORTANT: This MUST come before /{observation_id}
+# ============================================================
+
+@router.get(
+    "/{farm_id}/fields/{field_id}/observations/best",
+    response_model=list[ObservationResponse],
+)
+def get_best_observations(
+    farm_id: UUID,
+    field_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    farm = get_farm_by_id(
+        db=db,
+        farm_id=farm_id,
+    )
+
+    if farm is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Farm not found",
+        )
+
+    require_farm_access(
+        current_user=current_user,
+        farm=farm,
+    )
+
+    field = get_field_by_id(
+        db=db,
+        field_id=field_id,
+    )
+
+    if field is None or field.farm_id != farm.id:
+        raise HTTPException(
+            status_code=404,
+            detail="Field not found",
+        )
+
+    observations = get_best_field_observations(
+        db=db,
+        field_id=field_id,
+    )
+
+    return list(observations.values())
+
+
+# ============================================================
+# DELETE OBSERVATION
+# ============================================================
 
 @router.delete(
     "/{farm_id}/fields/{field_id}/observations/{observation_id}",
@@ -146,8 +206,6 @@ def delete_observation(
     )
 
     if farm is None:
-        # from fastapi import HTTPException
-
         raise HTTPException(
             status_code=404,
             detail="Farm not found",
@@ -164,8 +222,6 @@ def delete_observation(
     )
 
     if field is None or field.farm_id != farm.id:
-        # from fastapi import HTTPException
-
         raise HTTPException(
             status_code=404,
             detail="Field not found",
@@ -177,8 +233,6 @@ def delete_observation(
     )
 
     if observation is None or observation.field_id != field.id:
-        # from fastapi import HTTPException
-
         raise HTTPException(
             status_code=404,
             detail="Observation not found",
@@ -188,3 +242,5 @@ def delete_observation(
         db=db,
         observation_id=observation_id,
     )
+
+    return None

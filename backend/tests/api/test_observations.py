@@ -190,3 +190,57 @@ def test_missing_observation_returns_404(
     )
 
     assert response.status_code == 404
+
+def test_get_best_observations(
+    authenticated_client,
+):
+    farm, field = create_test_farm_and_field(
+        authenticated_client
+    )
+
+    observations = [
+        {
+            "observation_type": "soil_moisture",
+            "value": 28,
+            "unit": "%",
+            "source": "manual",
+            "observed_at": "2026-09-08T10:00:00Z",
+            "confidence": 0.9,
+        },
+        {
+            "observation_type": "air_humidity",
+            "value": 65,
+            "unit": "%",
+            "source": "weather_api",
+            "observed_at": "2026-09-08T10:00:00Z",
+            "confidence": 0.9,
+        },
+    ]
+
+    for observation in observations:
+        response = authenticated_client.post(
+            f"/api/v1/farms/{farm['id']}/fields/{field['id']}/observations",
+            json=observation,
+        )
+
+        assert response.status_code == 201
+
+    response = authenticated_client.get(
+        f"/api/v1/farms/{farm['id']}/fields/{field['id']}/observations/best"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 2
+
+    observation_types = {
+        item["observation_type"]
+        for item in data
+    }
+
+    assert observation_types == {
+        "soil_moisture",
+        "air_humidity",
+    }
