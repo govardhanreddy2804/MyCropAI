@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
 
+    weather_api_key: str | None = None
+    weather_provider: str = "openweather"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

@@ -23,6 +23,18 @@ class FieldCreate(BaseModel):
         max_length=255,
     )
 
+    latitude: float | None = Field(
+        default=None,
+        ge=-90,
+        le=90,
+    )
+
+    longitude: float | None = Field(
+        default=None,
+        ge=-180,
+        le=180,
+    )
+
 
 class FieldUpdate(BaseModel):
     name: str | None = Field(

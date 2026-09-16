@@ -54,4 +54,14 @@ class Field(Base):
     observations: Mapped[list["AgriculturalObservation"]] = relationship(
     back_populates="field",
     cascade="all, delete-orphan",
-)
+    )
+
+    latitude: Mapped[float | None] = mapped_column(
+    Float,
+    nullable=True,
+    )
+
+    longitude: Mapped[float | None] = mapped_column(
+    Float,
+    nullable=True,
+    )
