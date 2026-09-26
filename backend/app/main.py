@@ -11,6 +11,7 @@ from app.api.crops import router as crops_router
 from app.api.farm_overview import router as farm_overview_router
 from app.api.observations import router as observations_router
 from app.api.weather import router as weather_router
+from app.api.irrigation import router as irrigation_router
 
 from app.core.exceptions import UserAlreadyExistsError
 from app.core.exception_handlers import (
@@ -35,6 +36,7 @@ app.include_router(crops_router)
 app.include_router(farm_overview_router)
 app.include_router(observations_router)
 app.include_router(weather_router)
+app.include_router(irrigation_router)
 app.add_exception_handler(
     UserAlreadyExistsError,
     user_already_exists_handler,
