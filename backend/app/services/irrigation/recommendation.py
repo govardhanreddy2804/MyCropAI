@@ -12,6 +12,9 @@ from app.services.observation_resolver import (
     resolve_best_observations,
 )
 
+from app.services.irrigation.decision import (
+    determine_irrigation_decision,
+)
 
 def generate_irrigation_recommendation(
     db,
@@ -75,6 +78,14 @@ def generate_irrigation_recommendation(
         soil_type=field.soil_type,
     )
 
+    decision = determine_irrigation_decision(
+    irrigation_required=calculation.irrigation_required,
+    water_required_liters=calculation.water_required_liters,
+    soil_moisture=soil_moisture,
+    rainfall_mm=rainfall,
+    confidence=calculation.confidence,
+    )
+
     return {
         "field_id": field.id,
         "crop_id": crop.id,
@@ -86,9 +97,20 @@ def generate_irrigation_recommendation(
         ),
         "recommended_duration_minutes": None,
         "soil_moisture": soil_moisture,
+        "moisture_threshold": (
+            get_crop_water_profile(
+                crop.crop_type
+            ).moisture_threshold
+        ),
         "rainfall_mm": rainfall,
         "air_temperature": temperature,
         "air_humidity": humidity,
+
+         "decision": decision.decision,
+        "title": decision.title,
+        "message": decision.message,
+        "priority": decision.priority,
+
         "reason": calculation.reason,
         "confidence": calculation.confidence,
         "calculated_at": datetime.now(timezone.utc),

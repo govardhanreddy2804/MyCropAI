@@ -11,6 +11,7 @@ class IrrigationCalculation:
     water_required_liters: float
     reason: str
     confidence: float
+    moisture_threshold: float
 
 
 def calculate_irrigation_requirement(
@@ -45,6 +46,7 @@ def calculate_irrigation_requirement(
             water_required_liters=0,
             reason="Insufficient soil moisture data",
             confidence=0.25,
+            moisture_threshold=threshold,
         )
 
     # Recent rainfall reduces the immediate irrigation requirement.
@@ -59,6 +61,7 @@ def calculate_irrigation_requirement(
                 f"the {threshold:.1f}% irrigation threshold"
             ),
             confidence=round(confidence, 2),
+            moisture_threshold=threshold,
         )
 
     # Moisture deficit represented as percentage points.
@@ -125,4 +128,5 @@ def calculate_irrigation_requirement(
         ),
         reason=reason,
         confidence=round(confidence, 2),
+        moisture_threshold=threshold,
     )
