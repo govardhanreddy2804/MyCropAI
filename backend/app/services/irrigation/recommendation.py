@@ -9,12 +9,16 @@ from app.services.irrigation.crop_profile import (
     get_crop_water_profile,
 )
 from app.services.observation_resolver import (
-    resolve_best_observations,
+    resolve_safe_current_observations,
 )
-
+from app.services.observation_quality import (
+    ObservationQuality,
+    classify_observation_quality,
+)
 from app.services.irrigation.decision import (
     determine_irrigation_decision,
 )
+
 
 def generate_irrigation_recommendation(
     db,
@@ -26,7 +30,11 @@ def generate_irrigation_recommendation(
         field_id=field.id,
     )
 
-    best = resolve_best_observations(observations)
+    # Only use observations that are considered
+    # safe/current enough for an irrigation decision.
+    best = resolve_safe_current_observations(
+        observations
+    )
 
     soil_moisture_observation = best.get(
         ObservationType.SOIL_MOISTURE
@@ -68,6 +76,52 @@ def generate_irrigation_recommendation(
         else None
     )
 
+    # Determine the quality of the soil-moisture data.
+    # Soil moisture is the most important observation
+    # for this irrigation assessment.
+    if soil_moisture_observation is None:
+        data_quality = "insufficient_data"
+        data_quality_message = (
+            "Current soil moisture data is unavailable. "
+            "Add a recent soil moisture observation before "
+            "making an irrigation decision."
+        )
+    else:
+        soil_moisture_quality = classify_observation_quality(
+            soil_moisture_observation
+        )
+
+        if soil_moisture_quality == ObservationQuality.FRESH:
+            data_quality = "fresh"
+            data_quality_message = (
+                "Current soil moisture data is fresh "
+                "and has acceptable confidence."
+            )
+
+        elif (
+            soil_moisture_quality
+            == ObservationQuality.FRESH_LOW_CONFIDENCE
+        ):
+            data_quality = "fresh_low_confidence"
+            data_quality_message = (
+                "Current soil moisture data is recent "
+                "but has low confidence."
+            )
+
+        elif soil_moisture_quality == ObservationQuality.STALE:
+            data_quality = "stale"
+            data_quality_message = (
+                "The available soil moisture data is stale. "
+                "A recent observation is recommended."
+            )
+
+        else:
+            data_quality = "low_confidence"
+            data_quality_message = (
+                "The available soil moisture data has "
+                "low confidence."
+            )
+
     calculation = calculate_irrigation_requirement(
         field_area_acres=field.area,
         crop_type=crop.crop_type,
@@ -79,16 +133,17 @@ def generate_irrigation_recommendation(
     )
 
     decision = determine_irrigation_decision(
-    irrigation_required=calculation.irrigation_required,
-    water_required_liters=calculation.water_required_liters,
-    soil_moisture=soil_moisture,
-    rainfall_mm=rainfall,
-    confidence=calculation.confidence,
+        irrigation_required=calculation.irrigation_required,
+        water_required_liters=calculation.water_required_liters,
+        soil_moisture=soil_moisture,
+        rainfall_mm=rainfall,
+        confidence=calculation.confidence,
     )
 
     return {
         "field_id": field.id,
         "crop_id": crop.id,
+
         "irrigation_required": (
             calculation.irrigation_required
         ),
@@ -96,6 +151,7 @@ def generate_irrigation_recommendation(
             calculation.water_required_liters
         ),
         "recommended_duration_minutes": None,
+
         "soil_moisture": soil_moisture,
         "moisture_threshold": (
             get_crop_water_profile(
@@ -106,10 +162,13 @@ def generate_irrigation_recommendation(
         "air_temperature": temperature,
         "air_humidity": humidity,
 
-         "decision": decision.decision,
+        "decision": decision.decision,
         "title": decision.title,
         "message": decision.message,
         "priority": decision.priority,
+
+        "data_quality": data_quality,
+        "data_quality_message": data_quality_message,
 
         "reason": calculation.reason,
         "confidence": calculation.confidence,

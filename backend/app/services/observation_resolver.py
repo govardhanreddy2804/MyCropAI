@@ -1,26 +1,60 @@
+from collections import defaultdict
 from datetime import datetime, timezone
 
 from app.models.observation import AgriculturalObservation
-from app.services.observation_priority import get_source_priority
+from app.services.observation_freshness import (
+    get_freshness_policy,
+)
+from app.services.observation_priority import (
+    get_source_priority,
+)
 
-from collections import defaultdict
-from app.models.enums import ObservationType
 
-def observation_score(
+def get_observation_age_hours(
     observation: AgriculturalObservation,
+    now: datetime,
 ) -> float:
-    now = datetime.now(timezone.utc)
-
     observed_at = observation.observed_at
 
     if observed_at.tzinfo is None:
         observed_at = observed_at.replace(
-            tzinfo=timezone.utc
+            tzinfo=timezone.utc,
         )
 
-    age_hours = max(
-        0,
+    return max(
+        0.0,
         (now - observed_at).total_seconds() / 3600,
+    )
+
+
+def is_fresh(
+    observation: AgriculturalObservation,
+    now: datetime,
+) -> bool:
+    age_hours = get_observation_age_hours(
+        observation,
+        now,
+    )
+
+    policy = get_freshness_policy(
+        observation.observation_type,
+    )
+
+    return age_hours <= policy.max_age_hours
+
+
+def observation_score(
+    observation: AgriculturalObservation,
+    *,
+    now: datetime | None = None,
+) -> float:
+
+    if now is None:
+        now = datetime.now(timezone.utc)
+
+    age_hours = get_observation_age_hours(
+        observation,
+        now,
     )
 
     source_score = get_source_priority(
@@ -34,8 +68,9 @@ def observation_score(
         else 0.5
     )
 
-    # Freshness decreases gradually as observations become older.
-    freshness_score = 100 / (1 + age_hours / 24)
+    freshness_score = 100 / (
+        1 + age_hours / 24
+    )
 
     return (
         source_score * 0.60
@@ -46,24 +81,36 @@ def observation_score(
 
 def resolve_best_observation(
     observations: list[AgriculturalObservation],
-) -> AgriculturalObservation | None:
-
+):
     if not observations:
         return None
 
+    now = datetime.now(timezone.utc)
+
+    fresh_observations = [
+        observation
+        for observation in observations
+        if is_fresh(observation, now)
+    ]
+
+    candidates = (
+        fresh_observations
+        if fresh_observations
+        else observations
+    )
+
     return max(
-        observations,
-        key=observation_score,
+        candidates,
+        key=lambda observation: observation_score(
+            observation,
+            now=now,
+        ),
     )
 
 
 def resolve_best_observations(
     observations: list[AgriculturalObservation],
-) -> dict[
-    ObservationType,
-    AgriculturalObservation,
-]:
-
+):
     grouped = defaultdict(list)
 
     for observation in observations:
@@ -78,5 +125,45 @@ def resolve_best_observations(
 
         if best is not None:
             resolved[observation_type] = best
+
+    return resolved
+
+def resolve_safe_current_observations(
+    observations: list[AgriculturalObservation],
+):
+    grouped = defaultdict(list)
+
+    for observation in observations:
+        grouped[
+            observation.observation_type
+        ].append(observation)
+
+    resolved = {}
+    now = datetime.now(timezone.utc)
+
+    for observation_type, items in grouped.items():
+
+        fresh_items = [
+            observation
+            for observation in items
+            if is_fresh(observation, now)
+            and (
+                observation.confidence is None
+                or observation.confidence >= 0.50
+            )
+        ]
+
+        if not fresh_items:
+            continue
+
+        best = max(
+            fresh_items,
+            key=lambda observation: observation_score(
+                observation,
+                now=now,
+            ),
+        )
+
+        resolved[observation_type] = best
 
     return resolved

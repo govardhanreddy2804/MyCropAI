@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 
 from app.services.irrigation.decision import IrrigationDecision
 
+
 class IrrigationRecommendationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -26,6 +27,9 @@ class IrrigationRecommendationResponse(BaseModel):
     title: str
     message: str
     priority: str
+
+    data_quality: str
+    data_quality_message: str
 
     reason: str
     confidence: float
