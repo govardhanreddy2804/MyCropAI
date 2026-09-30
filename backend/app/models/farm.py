@@ -1,9 +1,15 @@
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
+
+if TYPE_CHECKING:
+    from app.models.alert import Alert
+    from app.models.field import Field
+
 
 class Farm(Base):
     __tablename__ = "farms"
@@ -43,6 +49,13 @@ class Farm(Base):
     )
 
     fields: Mapped[list["Field"]] = relationship(
+        "Field",
+        back_populates="farm",
+        cascade="all, delete-orphan",
+    )
+
+    alerts: Mapped[list["Alert"]] = relationship(
+        "Alert",
         back_populates="farm",
         cascade="all, delete-orphan",
     )

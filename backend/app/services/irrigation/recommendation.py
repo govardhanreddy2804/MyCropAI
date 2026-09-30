@@ -19,6 +19,10 @@ from app.services.irrigation.decision import (
     determine_irrigation_decision,
 )
 
+from app.services.irrigation.alert import (
+    create_irrigation_alert,
+)
+
 
 def generate_irrigation_recommendation(
     db,
@@ -139,6 +143,14 @@ def generate_irrigation_recommendation(
         rainfall_mm=rainfall,
         confidence=calculation.confidence,
     )
+
+    alert = create_irrigation_alert(
+    db=db,
+    farm_id=field.farm_id,
+    field_id=field.id,
+    crop_id=crop.id,
+    decision=decision,
+)
 
     return {
         "field_id": field.id,

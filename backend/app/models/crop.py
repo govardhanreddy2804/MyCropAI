@@ -1,4 +1,5 @@
 from datetime import date
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import Date, Enum, ForeignKey, String
@@ -6,6 +7,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 from app.models.enums import CropStatus
+
+if TYPE_CHECKING:
+    from app.models.alert import Alert
+    from app.models.field import Field
+
 
 class Crop(Base):
     __tablename__ = "crops"
@@ -51,5 +57,12 @@ class Crop(Base):
     )
 
     field: Mapped["Field"] = relationship(
+        "Field",
         back_populates="crops",
+    )
+
+    alerts: Mapped[list["Alert"]] = relationship(
+        "Alert",
+        back_populates="crop",
+        cascade="all, delete-orphan",
     )

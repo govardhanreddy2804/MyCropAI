@@ -104,6 +104,9 @@ class AuthenticatedClient:
     def put(self, *args, **kwargs):
         return self.client.put(*args, **kwargs)
 
+    def patch(self, *args, **kwargs):
+        return self.client.patch(*args, **kwargs)
+    
     def delete(self, *args, **kwargs):
         return self.client.delete(*args, **kwargs)
 
