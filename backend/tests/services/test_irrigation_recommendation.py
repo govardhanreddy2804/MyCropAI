@@ -113,6 +113,7 @@ def test_generate_irrigation_recommendation(db_session):
         db=db_session,
         field=field,
         crop=crop,
+        user_id=user.id,
     )
 
     assert result["irrigation_required"] is True

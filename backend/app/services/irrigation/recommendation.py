@@ -28,6 +28,7 @@ def generate_irrigation_recommendation(
     db,
     field,
     crop,
+    user_id,
 ):
     observations = get_observations_by_field(
         db=db,
@@ -146,6 +147,7 @@ def generate_irrigation_recommendation(
 
     alert = create_irrigation_alert(
     db=db,
+    user_id=user_id,
     farm_id=field.farm_id,
     field_id=field.id,
     crop_id=crop.id,

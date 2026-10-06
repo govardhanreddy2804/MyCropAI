@@ -84,4 +84,5 @@ def get_irrigation_recommendation(
         db=db,
         field=field,
         crop=crop,
+        user_id=current_user.id,
     )

@@ -58,3 +58,16 @@ class AlertPriority(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
+
+class NotificationChannel(str, Enum):
+    IN_APP = "in_app"
+    EMAIL = "email"
+    PUSH = "push"
+    SMS = "sms"
+
+class NotificationStatus(str, Enum):
+    PENDING = "pending"
+    SENT = "sent"
+    DELIVERED = "delivered"
+    FAILED = "failed"
+    READ = "read"

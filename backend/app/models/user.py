@@ -2,13 +2,18 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import String, Boolean, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 
 from sqlalchemy import Enum
 
 from app.models.enums import UserRole
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.notification import Notification
 
 class User(Base):
     __tablename__ = "users"
@@ -24,4 +29,9 @@ class User(Base):
 )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)               
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)    
+
+    notifications: Mapped[list["Notification"]] = relationship(
+    back_populates="user",
+    cascade="all, delete-orphan",
+)           

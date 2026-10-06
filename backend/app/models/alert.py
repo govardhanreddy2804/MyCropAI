@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from app.models.crop import Crop
     from app.models.farm import Farm
     from app.models.field import Field
+    from app.models.notification import Notification
 
 
 class Alert(Base):
@@ -124,3 +125,8 @@ class Alert(Base):
         "Crop",
         back_populates="alerts",
     )
+
+    notifications: Mapped[list["Notification"]] = relationship(
+    back_populates="alert",
+    cascade="all, delete-orphan",
+)

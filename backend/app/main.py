@@ -18,6 +18,9 @@ from app.core.exceptions import UserAlreadyExistsError
 from app.core.exception_handlers import (
     user_already_exists_handler,
 )
+from app.api.notifications import (
+    router as notifications_router,
+)
 
 app = FastAPI(
     title="MyCropAI API",
@@ -39,6 +42,7 @@ app.include_router(observations_router)
 app.include_router(weather_router)
 app.include_router(irrigation_router)
 app.include_router(alerts_router)
+app.include_router(notifications_router)
 app.add_exception_handler(
     UserAlreadyExistsError,
     user_already_exists_handler,

@@ -5,6 +5,7 @@ from app.models.field import Field
 from app.models.crop import Crop
 from app.models.observation import AgriculturalObservation
 from app.models.alert import Alert
+from app.models.notification import Notification
 
 __all__ = [
     "User",
