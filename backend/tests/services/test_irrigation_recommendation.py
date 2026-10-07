@@ -56,9 +56,7 @@ def test_generate_irrigation_recommendation(db_session):
         id=uuid4(),
         field_id=field.id,
         crop_type="maize",
-        planting_date=datetime.now(
-            timezone.utc
-        ).date(),
+        planting_date=datetime.now(timezone.utc).date(),
         status=CropStatus.ACTIVE,
     )
 

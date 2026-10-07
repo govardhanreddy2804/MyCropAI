@@ -9,6 +9,7 @@ from app.services.observation_resolver import (
 
 from uuid import uuid4
 
+
 def make_observation(
     observation_type,
     source,
@@ -22,8 +23,7 @@ def make_observation(
         value=value,
         unit="%",
         source=source,
-        observed_at=datetime.now(timezone.utc)
-        - timedelta(hours=hours_old),
+        observed_at=datetime.now(timezone.utc) - timedelta(hours=hours_old),
         confidence=confidence,
     )
 
@@ -41,9 +41,7 @@ def test_higher_priority_source_wins():
         30,
     )
 
-    result = resolve_best_observation(
-        [manual, sensor]
-    )
+    result = resolve_best_observation([manual, sensor])
 
     assert result is sensor
 
@@ -63,9 +61,7 @@ def test_fresh_data_can_beat_stale_high_priority_data():
         hours_old=1,
     )
 
-    result = resolve_best_observation(
-        [stale_sensor, fresh_manual]
-    )
+    result = resolve_best_observation([stale_sensor, fresh_manual])
 
     assert result is fresh_manual
 
@@ -85,9 +81,7 @@ def test_confidence_affects_score():
         confidence=0.1,
     )
 
-    result = resolve_best_observation(
-        [low_confidence, high_confidence]
-    )
+    result = resolve_best_observation([low_confidence, high_confidence])
 
     assert result is high_confidence
 
@@ -105,14 +99,8 @@ def test_resolves_one_observation_per_type():
         65,
     )
 
-    result = resolve_best_observations(
-        [moisture, humidity]
-    )
+    result = resolve_best_observations([moisture, humidity])
 
     assert len(result) == 2
-    assert result[
-        ObservationType.SOIL_MOISTURE
-    ] is moisture
-    assert result[
-        ObservationType.AIR_HUMIDITY
-    ] is humidity
+    assert result[ObservationType.SOIL_MOISTURE] is moisture
+    assert result[ObservationType.AIR_HUMIDITY] is humidity

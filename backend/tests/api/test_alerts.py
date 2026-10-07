@@ -129,9 +129,7 @@ def test_list_alerts(
         crop,
     )
 
-    response = authenticated_client.get(
-        f"/api/v1/farms/{farm.id}/alerts"
-    )
+    response = authenticated_client.get(f"/api/v1/farms/{farm.id}/alerts")
 
     assert response.status_code == 200
 
@@ -140,11 +138,7 @@ def test_list_alerts(
     assert isinstance(data, list)
     assert len(data) >= 1
 
-    alert_data = next(
-        item
-        for item in data
-        if item["id"] == str(alert.id)
-    )
+    alert_data = next(item for item in data if item["id"] == str(alert.id))
 
     assert alert_data["farm_id"] == str(farm.id)
     assert alert_data["field_id"] == str(field.id)
@@ -260,9 +254,7 @@ def test_farmer_cannot_access_another_farm_alerts(
         crop,
     )
 
-    response = second_authenticated_client.get(
-        f"/api/v1/farms/{farm.id}/alerts"
-    )
+    response = second_authenticated_client.get(f"/api/v1/farms/{farm.id}/alerts")
 
     assert response.status_code == 403
 
@@ -279,8 +271,7 @@ def test_marking_nonexistent_alert_as_read_returns_404(
     nonexistent_alert_id = uuid4()
 
     response = authenticated_client.patch(
-        f"/api/v1/farms/{farm.id}/alerts/"
-        f"{nonexistent_alert_id}/read"
+        f"/api/v1/farms/{farm.id}/alerts/{nonexistent_alert_id}/read"
     )
 
     assert response.status_code == 404
@@ -298,8 +289,7 @@ def test_acknowledging_nonexistent_alert_returns_404(
     nonexistent_alert_id = uuid4()
 
     response = authenticated_client.patch(
-        f"/api/v1/farms/{farm.id}/alerts/"
-        f"{nonexistent_alert_id}/acknowledge"
+        f"/api/v1/farms/{farm.id}/alerts/{nonexistent_alert_id}/acknowledge"
     )
 
     assert response.status_code == 404

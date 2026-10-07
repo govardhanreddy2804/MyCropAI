@@ -6,6 +6,7 @@ from app.repositories.user import (
     get_user_by_email,
 )
 
+
 def register_user(
     db: Session,
     name: str,
@@ -19,9 +20,7 @@ def register_user(
     )
 
     if existing_user:
-        raise ValueError(
-            "A user with this email already exists"
-        )
+        raise ValueError("A user with this email already exists")
 
     user = User(
         name=name,

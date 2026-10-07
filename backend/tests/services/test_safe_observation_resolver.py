@@ -69,9 +69,7 @@ def test_stale_only_observation_is_not_returned():
         confidence=0.95,
     )
 
-    result = resolve_safe_current_observations(
-        [stale_sensor]
-    )
+    result = resolve_safe_current_observations([stale_sensor])
 
     assert ObservationType.SOIL_MOISTURE not in result
 
@@ -86,8 +84,6 @@ def test_low_confidence_observation_is_not_returned():
         confidence=0.20,
     )
 
-    result = resolve_safe_current_observations(
-        [low_confidence]
-    )
+    result = resolve_safe_current_observations([low_confidence])
 
     assert ObservationType.SOIL_MOISTURE not in result

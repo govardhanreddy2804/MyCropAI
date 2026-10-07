@@ -88,9 +88,7 @@ def calculate_irrigation_requirement(
     liters_per_mm_per_acre = 4046.86
 
     water_required_liters = (
-        net_water_depth_mm
-        * field_area_acres
-        * liters_per_mm_per_acre
+        net_water_depth_mm * field_area_acres * liters_per_mm_per_acre
     )
 
     # Adjust confidence based on available supporting data.
@@ -115,10 +113,7 @@ def calculate_irrigation_requirement(
     )
 
     if recent_rainfall > 0:
-        reason += (
-            f"; {recent_rainfall:.1f} mm recent rainfall "
-            "was accounted for"
-        )
+        reason += f"; {recent_rainfall:.1f} mm recent rainfall was accounted for"
 
     return IrrigationCalculation(
         irrigation_required=True,

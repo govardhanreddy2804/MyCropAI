@@ -37,49 +37,25 @@ def generate_irrigation_recommendation(
 
     # Only use observations that are considered
     # safe/current enough for an irrigation decision.
-    best = resolve_safe_current_observations(
-        observations
-    )
+    best = resolve_safe_current_observations(observations)
 
-    soil_moisture_observation = best.get(
-        ObservationType.SOIL_MOISTURE
-    )
+    soil_moisture_observation = best.get(ObservationType.SOIL_MOISTURE)
 
-    rainfall_observation = best.get(
-        ObservationType.RAINFALL
-    )
+    rainfall_observation = best.get(ObservationType.RAINFALL)
 
-    temperature_observation = best.get(
-        ObservationType.AIR_TEMPERATURE
-    )
+    temperature_observation = best.get(ObservationType.AIR_TEMPERATURE)
 
-    humidity_observation = best.get(
-        ObservationType.AIR_HUMIDITY
-    )
+    humidity_observation = best.get(ObservationType.AIR_HUMIDITY)
 
     soil_moisture = (
-        soil_moisture_observation.value
-        if soil_moisture_observation
-        else None
+        soil_moisture_observation.value if soil_moisture_observation else None
     )
 
-    rainfall = (
-        rainfall_observation.value
-        if rainfall_observation
-        else None
-    )
+    rainfall = rainfall_observation.value if rainfall_observation else None
 
-    temperature = (
-        temperature_observation.value
-        if temperature_observation
-        else None
-    )
+    temperature = temperature_observation.value if temperature_observation else None
 
-    humidity = (
-        humidity_observation.value
-        if humidity_observation
-        else None
-    )
+    humidity = humidity_observation.value if humidity_observation else None
 
     # Determine the quality of the soil-moisture data.
     # Soil moisture is the most important observation
@@ -92,25 +68,18 @@ def generate_irrigation_recommendation(
             "making an irrigation decision."
         )
     else:
-        soil_moisture_quality = classify_observation_quality(
-            soil_moisture_observation
-        )
+        soil_moisture_quality = classify_observation_quality(soil_moisture_observation)
 
         if soil_moisture_quality == ObservationQuality.FRESH:
             data_quality = "fresh"
             data_quality_message = (
-                "Current soil moisture data is fresh "
-                "and has acceptable confidence."
+                "Current soil moisture data is fresh and has acceptable confidence."
             )
 
-        elif (
-            soil_moisture_quality
-            == ObservationQuality.FRESH_LOW_CONFIDENCE
-        ):
+        elif soil_moisture_quality == ObservationQuality.FRESH_LOW_CONFIDENCE:
             data_quality = "fresh_low_confidence"
             data_quality_message = (
-                "Current soil moisture data is recent "
-                "but has low confidence."
+                "Current soil moisture data is recent but has low confidence."
             )
 
         elif soil_moisture_quality == ObservationQuality.STALE:
@@ -123,8 +92,7 @@ def generate_irrigation_recommendation(
         else:
             data_quality = "low_confidence"
             data_quality_message = (
-                "The available soil moisture data has "
-                "low confidence."
+                "The available soil moisture data has low confidence."
             )
 
     calculation = calculate_irrigation_requirement(
@@ -146,44 +114,33 @@ def generate_irrigation_recommendation(
     )
 
     alert = create_irrigation_alert(
-    db=db,
-    user_id=user_id,
-    farm_id=field.farm_id,
-    field_id=field.id,
-    crop_id=crop.id,
-    decision=decision,
-)
+        db=db,
+        user_id=user_id,
+        farm_id=field.farm_id,
+        field_id=field.id,
+        crop_id=crop.id,
+        decision=decision,
+    )
 
     return {
         "field_id": field.id,
         "crop_id": crop.id,
-
-        "irrigation_required": (
-            calculation.irrigation_required
-        ),
-        "water_required_liters": (
-            calculation.water_required_liters
-        ),
+        "irrigation_required": (calculation.irrigation_required),
+        "water_required_liters": (calculation.water_required_liters),
         "recommended_duration_minutes": None,
-
         "soil_moisture": soil_moisture,
         "moisture_threshold": (
-            get_crop_water_profile(
-                crop.crop_type
-            ).moisture_threshold
+            get_crop_water_profile(crop.crop_type).moisture_threshold
         ),
         "rainfall_mm": rainfall,
         "air_temperature": temperature,
         "air_humidity": humidity,
-
         "decision": decision.decision,
         "title": decision.title,
         "message": decision.message,
         "priority": decision.priority,
-
         "data_quality": data_quality,
         "data_quality_message": data_quality_message,
-
         "reason": calculation.reason,
         "confidence": calculation.confidence,
         "calculated_at": datetime.now(timezone.utc),

@@ -18,8 +18,6 @@ def test_crop_lookup_is_case_insensitive():
 
 
 def test_unknown_crop_uses_default_profile():
-    profile = get_crop_water_profile(
-        "some-unknown-crop"
-    )
+    profile = get_crop_water_profile("some-unknown-crop")
 
     assert profile == DEFAULT_CROP_PROFILE

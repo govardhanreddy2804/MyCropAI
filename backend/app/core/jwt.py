@@ -17,9 +17,7 @@ def create_access_token(
         "role": role,
         "type": "access",
         "iat": now,
-        "exp": now + timedelta(
-            minutes=settings.access_token_expire_minutes
-        ),
+        "exp": now + timedelta(minutes=settings.access_token_expire_minutes),
     }
 
     return jwt.encode(
@@ -27,6 +25,7 @@ def create_access_token(
         settings.jwt_secret_key,
         algorithm=settings.jwt_algorithm,
     )
+
 
 def create_refresh_token(
     user_id: str,
@@ -38,9 +37,7 @@ def create_refresh_token(
         "sub": user_id,
         "type": "refresh",
         "iat": now,
-        "exp": now + timedelta(
-            days=settings.refresh_token_expire_days
-        ),
+        "exp": now + timedelta(days=settings.refresh_token_expire_days),
     }
 
     return jwt.encode(
@@ -48,6 +45,7 @@ def create_refresh_token(
         settings.jwt_secret_key,
         algorithm=settings.jwt_algorithm,
     )
+
 
 def decode_token(token: str) -> dict:
 

@@ -59,5 +59,5 @@ class AgriculturalObservation(Base):
     )
 
     field: Mapped["Field"] = relationship(
-    back_populates="observations",
+        back_populates="observations",
     )

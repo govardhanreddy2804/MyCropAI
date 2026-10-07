@@ -24,9 +24,7 @@ def get_notification_by_id(
     db: Session,
     notification_id: UUID,
 ) -> Notification | None:
-    statement = select(Notification).where(
-        Notification.id == notification_id
-    )
+    statement = select(Notification).where(Notification.id == notification_id)
 
     return db.scalar(statement)
 
@@ -41,9 +39,7 @@ def get_notifications_by_user(
         .order_by(Notification.created_at.desc())
     )
 
-    return list(
-        db.scalars(statement).all()
-    )
+    return list(db.scalars(statement).all())
 
 
 def get_notification_for_alert_and_channel(

@@ -25,9 +25,7 @@ class FarmCreate(BaseModel):
 
 
 class FarmResponse(BaseModel):
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     owner_id: UUID
@@ -35,6 +33,7 @@ class FarmResponse(BaseModel):
     location: str
     area: float
     soil_type: str | None
+
 
 class FarmUpdate(BaseModel):
     name: str | None = Field(

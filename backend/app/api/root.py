@@ -7,6 +7,4 @@ router = APIRouter()
 
 @router.get("/")
 def root(app_name: str = Depends(get_app_name)):
-    return {
-        "message": f"Welcome to {app_name}"
-    }
+    return {"message": f"Welcome to {app_name}"}

@@ -49,11 +49,7 @@ def is_confidence_acceptable(
     observation: AgriculturalObservation,
     minimum_confidence: float = 0.50,
 ) -> bool:
-    confidence = (
-        observation.confidence
-        if observation.confidence is not None
-        else 0.50
-    )
+    confidence = observation.confidence if observation.confidence is not None else 0.50
 
     return confidence >= minimum_confidence
 

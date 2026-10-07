@@ -6,9 +6,7 @@ from app.models.enums import CropStatus
 
 
 class FarmOverviewCrop(BaseModel):
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     crop_type: str
@@ -17,9 +15,7 @@ class FarmOverviewCrop(BaseModel):
 
 
 class FarmOverviewField(BaseModel):
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     name: str

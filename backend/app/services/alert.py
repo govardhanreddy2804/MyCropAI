@@ -53,9 +53,7 @@ def create_or_get_alert(
         message=message,
         deduplication_key=deduplication_key,
         created_at=now,
-        expires_at=now + timedelta(
-            hours=expiration_hours
-        ),
+        expires_at=now + timedelta(hours=expiration_hours),
     )
 
     return create_alert(db, alert)
@@ -110,6 +108,7 @@ def acknowledge_alert(
         },
     )
 
+
 def expire_alert_if_needed(
     db: Session,
     alert: Alert,
@@ -117,8 +116,7 @@ def expire_alert_if_needed(
 
     if (
         alert.expires_at is not None
-        and alert.expires_at
-        <= datetime.now(timezone.utc)
+        and alert.expires_at <= datetime.now(timezone.utc)
         and alert.status != AlertStatus.ACKNOWLEDGED
     ):
         update_alert(
@@ -130,6 +128,7 @@ def expire_alert_if_needed(
         )
 
     return alert
+
 
 def list_farm_alerts(
     db: Session,

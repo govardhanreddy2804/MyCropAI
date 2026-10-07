@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.models.refresh_session import RefreshSession
 
+
 def create_refresh_session(
     db: Session,
     session: RefreshSession,
@@ -18,14 +19,13 @@ def create_refresh_session(
 
     return session
 
+
 def get_refresh_session_by_token_hash(
     db: Session,
     token_hash: str,
 ) -> RefreshSession | None:
 
-    statement = select(RefreshSession).where(
-        RefreshSession.token_hash == token_hash
-    )
+    statement = select(RefreshSession).where(RefreshSession.token_hash == token_hash)
 
     return db.scalar(statement)
 
@@ -37,6 +37,7 @@ def revoke_refresh_session(
 
     session.revoked_at = datetime.now(timezone.utc)
     db.flush()
+
 
 def get_active_refresh_sessions_for_user(
     db: Session,

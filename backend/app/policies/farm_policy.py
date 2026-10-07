@@ -13,6 +13,7 @@ def can_access_farm(
 
     return farm.owner_id == current_user.id
 
+
 def require_farm_access(
     current_user,
     farm,

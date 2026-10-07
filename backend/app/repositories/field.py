@@ -22,9 +22,7 @@ def get_field_by_id(
     field_id: UUID,
 ) -> Field | None:
 
-    statement = select(Field).where(
-        Field.id == field_id
-    )
+    statement = select(Field).where(Field.id == field_id)
 
     return db.scalar(statement)
 
@@ -34,15 +32,9 @@ def get_fields_by_farm(
     farm_id: UUID,
 ) -> list[Field]:
 
-    statement = (
-        select(Field)
-        .where(Field.farm_id == farm_id)
-        .order_by(Field.name)
-    )
+    statement = select(Field).where(Field.farm_id == farm_id).order_by(Field.name)
 
-    return list(
-        db.scalars(statement).all()
-    )
+    return list(db.scalars(statement).all())
 
 
 def update_field(

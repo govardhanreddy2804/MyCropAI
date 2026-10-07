@@ -63,20 +63,12 @@ def observation_score(
     )
 
     confidence_score = (
-        observation.confidence
-        if observation.confidence is not None
-        else 0.5
+        observation.confidence if observation.confidence is not None else 0.5
     )
 
-    freshness_score = 100 / (
-        1 + age_hours / 24
-    )
+    freshness_score = 100 / (1 + age_hours / 24)
 
-    return (
-        source_score * 0.60
-        + freshness_score * 0.25
-        + confidence_score * 100 * 0.15
-    )
+    return source_score * 0.60 + freshness_score * 0.25 + confidence_score * 100 * 0.15
 
 
 def resolve_best_observation(
@@ -88,16 +80,10 @@ def resolve_best_observation(
     now = datetime.now(timezone.utc)
 
     fresh_observations = [
-        observation
-        for observation in observations
-        if is_fresh(observation, now)
+        observation for observation in observations if is_fresh(observation, now)
     ]
 
-    candidates = (
-        fresh_observations
-        if fresh_observations
-        else observations
-    )
+    candidates = fresh_observations if fresh_observations else observations
 
     return max(
         candidates,
@@ -114,9 +100,7 @@ def resolve_best_observations(
     grouped = defaultdict(list)
 
     for observation in observations:
-        grouped[
-            observation.observation_type
-        ].append(observation)
+        grouped[observation.observation_type].append(observation)
 
     resolved = {}
 
@@ -128,29 +112,24 @@ def resolve_best_observations(
 
     return resolved
 
+
 def resolve_safe_current_observations(
     observations: list[AgriculturalObservation],
 ):
     grouped = defaultdict(list)
 
     for observation in observations:
-        grouped[
-            observation.observation_type
-        ].append(observation)
+        grouped[observation.observation_type].append(observation)
 
     resolved = {}
     now = datetime.now(timezone.utc)
 
     for observation_type, items in grouped.items():
-
         fresh_items = [
             observation
             for observation in items
             if is_fresh(observation, now)
-            and (
-                observation.confidence is None
-                or observation.confidence >= 0.50
-            )
+            and (observation.confidence is None or observation.confidence >= 0.50)
         ]
 
         if not fresh_items:

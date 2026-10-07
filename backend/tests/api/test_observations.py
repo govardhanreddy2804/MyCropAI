@@ -32,9 +32,7 @@ def create_test_farm_and_field(authenticated_client):
 def test_create_manual_observation(
     authenticated_client,
 ):
-    farm, field = create_test_farm_and_field(
-        authenticated_client
-    )
+    farm, field = create_test_farm_and_field(authenticated_client)
 
     response = authenticated_client.post(
         f"/api/v1/farms/{farm['id']}/fields/{field['id']}/observations",
@@ -63,9 +61,7 @@ def test_create_manual_observation(
 def test_list_field_observations(
     authenticated_client,
 ):
-    farm, field = create_test_farm_and_field(
-        authenticated_client
-    )
+    farm, field = create_test_farm_and_field(authenticated_client)
 
     for observation in [
         {
@@ -106,9 +102,7 @@ def test_list_field_observations(
 def test_delete_observation(
     authenticated_client,
 ):
-    farm, field = create_test_farm_and_field(
-        authenticated_client
-    )
+    farm, field = create_test_farm_and_field(authenticated_client)
 
     create_response = authenticated_client.post(
         f"/api/v1/farms/{farm['id']}/fields/{field['id']}/observations",
@@ -143,9 +137,7 @@ def test_farmer_cannot_access_another_farm_observations(
     authenticated_client,
     second_authenticated_client,
 ):
-    farm, field = create_test_farm_and_field(
-        authenticated_client
-    )
+    farm, field = create_test_farm_and_field(authenticated_client)
 
     response = second_authenticated_client.get(
         f"/api/v1/farms/{farm['id']}/fields/{field['id']}/observations"
@@ -158,9 +150,7 @@ def test_observation_cannot_be_added_to_another_farm_field(
     authenticated_client,
     second_authenticated_client,
 ):
-    farm, field = create_test_farm_and_field(
-        authenticated_client
-    )
+    farm, field = create_test_farm_and_field(authenticated_client)
 
     response = second_authenticated_client.post(
         f"/api/v1/farms/{farm['id']}/fields/{field['id']}/observations",
@@ -179,9 +169,7 @@ def test_observation_cannot_be_added_to_another_farm_field(
 def test_missing_observation_returns_404(
     authenticated_client,
 ):
-    farm, field = create_test_farm_and_field(
-        authenticated_client
-    )
+    farm, field = create_test_farm_and_field(authenticated_client)
 
     observation_id = uuid4()
 
@@ -191,12 +179,11 @@ def test_missing_observation_returns_404(
 
     assert response.status_code == 404
 
+
 def test_get_best_observations(
     authenticated_client,
 ):
-    farm, field = create_test_farm_and_field(
-        authenticated_client
-    )
+    farm, field = create_test_farm_and_field(authenticated_client)
 
     observations = [
         {
@@ -235,10 +222,7 @@ def test_get_best_observations(
 
     assert len(data) == 2
 
-    observation_types = {
-        item["observation_type"]
-        for item in data
-    }
+    observation_types = {item["observation_type"] for item in data}
 
     assert observation_types == {
         "soil_moisture",

@@ -79,10 +79,7 @@ def determine_irrigation_decision(
         return IrrigationDecisionResult(
             decision=IrrigationDecision.WATER_NOW,
             title="Irrigation recommended",
-            message=(
-                "Current conditions indicate that irrigation "
-                "is recommended."
-            ),
+            message=("Current conditions indicate that irrigation is recommended."),
             priority="high",
         )
 
@@ -90,8 +87,7 @@ def determine_irrigation_decision(
         decision=IrrigationDecision.WATER_SOON,
         title="Irrigation may be needed soon",
         message=(
-            "Current conditions indicate that irrigation "
-            "should be reviewed again soon."
+            "Current conditions indicate that irrigation should be reviewed again soon."
         ),
         priority="medium",
     )

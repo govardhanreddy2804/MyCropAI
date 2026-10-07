@@ -22,9 +22,7 @@ def get_crop_by_id(
     crop_id: UUID,
 ) -> Crop | None:
 
-    statement = select(Crop).where(
-        Crop.id == crop_id
-    )
+    statement = select(Crop).where(Crop.id == crop_id)
 
     return db.scalar(statement)
 
@@ -35,14 +33,10 @@ def get_crops_by_field(
 ) -> list[Crop]:
 
     statement = (
-        select(Crop)
-        .where(Crop.field_id == field_id)
-        .order_by(Crop.planting_date)
+        select(Crop).where(Crop.field_id == field_id).order_by(Crop.planting_date)
     )
 
-    return list(
-        db.scalars(statement).all()
-    )
+    return list(db.scalars(statement).all())
 
 
 def update_crop(

@@ -7,6 +7,7 @@ class IrrigationSafetyResult:
     data_quality: str
     message: str
 
+
 def assess_irrigation_data_quality(
     *,
     soil_moisture_available: bool,
@@ -30,15 +31,11 @@ def assess_irrigation_data_quality(
             safe_to_recommend=True,
             data_quality="limited",
             message=(
-                "Soil moisture is available, but recent "
-                "rainfall data is unavailable."
+                "Soil moisture is available, but recent rainfall data is unavailable."
             ),
         )
 
-    if (
-        not temperature_available
-        or not humidity_available
-    ):
+    if not temperature_available or not humidity_available:
         return IrrigationSafetyResult(
             safe_to_recommend=True,
             data_quality="limited",

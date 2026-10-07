@@ -10,10 +10,7 @@ from app.repositories.user import get_user_by_email
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 
-router = APIRouter(
-    prefix="/users",
-    tags=["Users"]
-)
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post("/", response_model=UserResponse)
@@ -23,7 +20,7 @@ def create_user(user: UserCreate):
         "id": 1,
         "name": user.name,
         "email": user.email,
-        "password": user.password
+        "password": user.password,
     }
 
     return created_user
@@ -40,9 +37,7 @@ def lookup_user(
     )
 
     if user is None:
-        return {
-            "found": False
-        }
+        return {"found": False}
 
     return {
         "found": True,
@@ -50,6 +45,7 @@ def lookup_user(
         "name": user.name,
         "email": user.email,
     }
+
 
 @router.get("/me")
 def get_current_user_profile(

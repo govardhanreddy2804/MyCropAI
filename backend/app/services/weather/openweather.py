@@ -48,10 +48,7 @@ class OpenWeatherProvider(WeatherProvider):
             observed_at=observed_at,
             air_temperature=data["main"]["temp"],
             air_humidity=data["main"]["humidity"],
-            rainfall=(
-                data.get("rain", {}).get("1h")
-                or data.get("rain", {}).get("3h")
-            ),
+            rainfall=(data.get("rain", {}).get("1h") or data.get("rain", {}).get("3h")),
             wind_speed=data.get("wind", {}).get("speed"),
         )
 
@@ -92,9 +89,7 @@ class OpenWeatherProvider(WeatherProvider):
                         observed_at=observed_at,
                         air_temperature=item["main"]["temp"],
                         air_humidity=item["main"]["humidity"],
-                        rainfall=(
-                            item.get("rain", {}).get("3h")
-                        ),
+                        rainfall=(item.get("rain", {}).get("3h")),
                         wind_speed=item.get("wind", {}).get("speed"),
                     )
                 )

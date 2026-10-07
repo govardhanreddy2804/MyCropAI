@@ -13,10 +13,7 @@ def test_no_irrigation_needed():
         confidence=0.8,
     )
 
-    assert (
-        result.decision
-        == IrrigationDecision.NO_IRRIGATION_NEEDED
-    )
+    assert result.decision == IrrigationDecision.NO_IRRIGATION_NEEDED
 
 
 def test_water_now():
@@ -28,10 +25,7 @@ def test_water_now():
         confidence=0.8,
     )
 
-    assert (
-        result.decision
-        == IrrigationDecision.WATER_NOW
-    )
+    assert result.decision == IrrigationDecision.WATER_NOW
 
     assert result.priority == "high"
 
@@ -45,10 +39,7 @@ def test_wait_after_rain():
         confidence=0.8,
     )
 
-    assert (
-        result.decision
-        == IrrigationDecision.WAIT_AFTER_RAIN
-    )
+    assert result.decision == IrrigationDecision.WAIT_AFTER_RAIN
 
 
 def test_insufficient_data():
@@ -60,10 +51,7 @@ def test_insufficient_data():
         confidence=0.2,
     )
 
-    assert (
-        result.decision
-        == IrrigationDecision.INSUFFICIENT_DATA
-    )
+    assert result.decision == IrrigationDecision.INSUFFICIENT_DATA
 
 
 def test_low_confidence():
@@ -75,7 +63,4 @@ def test_low_confidence():
         confidence=0.3,
     )
 
-    assert (
-        result.decision
-        == IrrigationDecision.INSUFFICIENT_DATA
-    )
+    assert result.decision == IrrigationDecision.INSUFFICIENT_DATA

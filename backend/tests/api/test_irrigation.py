@@ -11,6 +11,7 @@ from app.models.farm import Farm
 from app.models.field import Field
 from app.models.observation import AgriculturalObservation
 
+
 def create_test_farm_field_crop(
     db_session,
     authenticated_client,
@@ -143,9 +144,7 @@ def test_irrigation_recommended(
     )
 
     response = authenticated_client.get(
-        f"/api/v1/farms/{farm.id}"
-        f"/fields/{field.id}"
-        f"/irrigation/recommendation",
+        f"/api/v1/farms/{farm.id}/fields/{field.id}/irrigation/recommendation",
         params={
             "crop_id": str(crop.id),
         },
@@ -209,9 +208,7 @@ def test_no_irrigation_needed_when_soil_moisture_is_sufficient(
     )
 
     response = authenticated_client.get(
-        f"/api/v1/farms/{farm.id}"
-        f"/fields/{field.id}"
-        f"/irrigation/recommendation",
+        f"/api/v1/farms/{farm.id}/fields/{field.id}/irrigation/recommendation",
         params={
             "crop_id": str(crop.id),
         },
@@ -264,9 +261,7 @@ def test_wait_after_recent_rainfall(
     )
 
     response = authenticated_client.get(
-        f"/api/v1/farms/{farm.id}"
-        f"/fields/{field.id}"
-        f"/irrigation/recommendation",
+        f"/api/v1/farms/{farm.id}/fields/{field.id}/irrigation/recommendation",
         params={
             "crop_id": str(crop.id),
         },
@@ -318,9 +313,7 @@ def test_insufficient_data_when_soil_moisture_is_missing(
     )
 
     response = authenticated_client.get(
-        f"/api/v1/farms/{farm.id}"
-        f"/fields/{field.id}"
-        f"/irrigation/recommendation",
+        f"/api/v1/farms/{farm.id}/fields/{field.id}/irrigation/recommendation",
         params={
             "crop_id": str(crop.id),
         },
@@ -377,9 +370,7 @@ def test_crop_must_belong_to_field(
     db_session.flush()
 
     response = authenticated_client.get(
-        f"/api/v1/farms/{farm.id}"
-        f"/fields/{field.id}"
-        f"/irrigation/recommendation",
+        f"/api/v1/farms/{farm.id}/fields/{field.id}/irrigation/recommendation",
         params={
             "crop_id": str(other_crop.id),
         },
@@ -405,9 +396,7 @@ def test_nonexistent_crop_returns_404(
     nonexistent_crop_id = uuid4()
 
     response = authenticated_client.get(
-        f"/api/v1/farms/{farm.id}"
-        f"/fields/{field.id}"
-        f"/irrigation/recommendation",
+        f"/api/v1/farms/{farm.id}/fields/{field.id}/irrigation/recommendation",
         params={
             "crop_id": str(nonexistent_crop_id),
         },
@@ -499,15 +488,11 @@ def test_other_farmer_cannot_get_irrigation_recommendation(
     )
 
     response = second_authenticated_client.get(
-        f"/api/v1/farms/{farm.id}"
-        f"/fields/{field.id}"
-        f"/irrigation/recommendation",
+        f"/api/v1/farms/{farm.id}/fields/{field.id}/irrigation/recommendation",
         params={
             "crop_id": str(crop.id),
         },
     )
 
     assert response.status_code == 403
-    assert response.json()["detail"] == (
-        "You do not have access to this farm"
-    )
+    assert response.json()["detail"] == ("You do not have access to this farm")

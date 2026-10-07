@@ -14,6 +14,10 @@ from app.repositories.notification import (
     get_notification_for_alert_and_channel,
     update_notification,
 )
+from app.services.alert import get_alert_by_id
+from app.services.notification_preference import (
+    is_channel_enabled,
+)
 from app.services.notifications.in_app import (
     InAppNotificationProvider,
 )
@@ -25,19 +29,7 @@ def create_alert_notification(
     user_id: UUID,
     alert_id: UUID,
     channel: NotificationChannel,
-) -> Notification:
-
-    existing = (
-        get_notification_for_alert_and_channel(
-            db,
-            alert_id=alert_id,
-            user_id=user_id,
-            channel=channel,
-        )
-    )
-
-    if existing is not None:
-        return existing
+) -> Notification | None:
 
     alert = get_alert_by_id(
         db,
@@ -45,9 +37,25 @@ def create_alert_notification(
     )
 
     if alert is None:
-        raise ValueError(
-            "Alert not found"
-        )
+        raise ValueError("Alert not found")
+
+    if not is_channel_enabled(
+        db=db,
+        user_id=user_id,
+        alert_type=alert.alert_type,
+        channel=channel,
+    ):
+        return None
+
+    existing = get_notification_for_alert_and_channel(
+        db,
+        alert_id=alert_id,
+        user_id=user_id,
+        channel=channel,
+    )
+
+    if existing is not None:
+        return existing
 
     notification = Notification(
         user_id=user_id,
@@ -79,15 +87,11 @@ def mark_notification_read(
     notification: Notification,
 ) -> Notification:
 
-    if notification.status == (
-        NotificationStatus.READ
-    ):
+    if notification.status == NotificationStatus.READ:
         return notification
 
     notification.status = NotificationStatus.READ
-    notification.read_at = datetime.now(
-        timezone.utc
-    )
+    notification.read_at = datetime.now(timezone.utc)
 
     return update_notification(
         db,

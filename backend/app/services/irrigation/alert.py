@@ -27,12 +27,7 @@ def create_irrigation_alert(
     }:
         return None
 
-    deduplication_key = (
-        f"irrigation:"
-        f"{field_id}:"
-        f"{crop_id}:"
-        f"{decision.decision.value}"
-    )
+    deduplication_key = f"irrigation:{field_id}:{crop_id}:{decision.decision.value}"
 
     alert = create_or_get_alert(
         db=db,
@@ -40,9 +35,7 @@ def create_irrigation_alert(
         field_id=field_id,
         crop_id=crop_id,
         alert_type=AlertType.IRRIGATION,
-        priority=AlertPriority(
-            decision.priority
-        ),
+        priority=AlertPriority(decision.priority),
         title=decision.title,
         message=decision.message,
         deduplication_key=deduplication_key,

@@ -11,6 +11,7 @@ from app.repositories.farm import (
     update_farm,
 )
 
+
 def create_user_farm(
     db: Session,
     user_id: UUID,
@@ -35,6 +36,7 @@ def create_user_farm(
 
     return farm
 
+
 def get_user_farms(
     db: Session,
     user_id: UUID,
@@ -44,6 +46,7 @@ def get_user_farms(
         db,
         user_id,
     )
+
 
 def update_user_farm(
     db: Session,
@@ -61,6 +64,7 @@ def update_user_farm(
     db.refresh(farm)
 
     return farm
+
 
 def delete_user_farm(
     db: Session,

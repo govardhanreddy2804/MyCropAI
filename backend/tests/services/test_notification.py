@@ -163,3 +163,30 @@ def test_mark_notification_read(
 
     assert updated.status == NotificationStatus.READ
     assert updated.read_at is not None
+
+
+def test_disabled_preference_prevents_notification(
+    db_session,
+    test_user,
+    irrigation_alert,
+):
+    from app.models.enums import NotificationChannel
+    from app.services.notification_preference import set_user_preference
+    from app.services.notifications.service import create_alert_notification
+
+    set_user_preference(
+        db=db_session,
+        user_id=test_user.id,
+        alert_type=irrigation_alert.alert_type,
+        channel=NotificationChannel.IN_APP,
+        enabled=False,
+    )
+
+    notification = create_alert_notification(
+        db=db_session,
+        user_id=test_user.id,
+        alert_id=irrigation_alert.id,
+        channel=NotificationChannel.IN_APP,
+    )
+
+    assert notification is None

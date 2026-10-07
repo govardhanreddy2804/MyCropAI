@@ -96,10 +96,7 @@ def test_ingest_current_weather(db_session):
 
     assert len(observations) == 4
 
-    types = {
-        observation.observation_type
-        for observation in observations
-    }
+    types = {observation.observation_type for observation in observations}
 
     assert ObservationType.AIR_TEMPERATURE in types
     assert ObservationType.AIR_HUMIDITY in types

@@ -36,17 +36,11 @@ def get_observations_by_field(
 
     statement = (
         select(AgriculturalObservation)
-        .where(
-            AgriculturalObservation.field_id == field_id
-        )
-        .order_by(
-            AgriculturalObservation.observed_at.desc()
-        )
+        .where(AgriculturalObservation.field_id == field_id)
+        .order_by(AgriculturalObservation.observed_at.desc())
     )
 
-    return list(
-        db.scalars(statement).all()
-    )
+    return list(db.scalars(statement).all())
 
 
 def delete_observation(

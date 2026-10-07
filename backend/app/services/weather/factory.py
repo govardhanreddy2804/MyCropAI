@@ -7,6 +7,4 @@ def get_weather_provider() -> WeatherProvider:
     if settings.weather_provider == "openweather":
         return OpenWeatherProvider()
 
-    raise RuntimeError(
-        f"Unsupported weather provider: {settings.weather_provider}"
-    )
+    raise RuntimeError(f"Unsupported weather provider: {settings.weather_provider}")

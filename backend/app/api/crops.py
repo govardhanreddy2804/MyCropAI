@@ -33,6 +33,7 @@ router = APIRouter(
     tags=["Crops"],
 )
 
+
 @router.post(
     "",
     response_model=CropResponse,
@@ -42,9 +43,7 @@ def create_crop_endpoint(
     farm_id: UUID,
     field_id: UUID,
     request: CropCreate,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -84,6 +83,7 @@ def create_crop_endpoint(
         expected_harvest_date=request.expected_harvest_date,
     )
 
+
 @router.get(
     "",
     response_model=list[CropResponse],
@@ -91,9 +91,7 @@ def create_crop_endpoint(
 def list_crops(
     farm_id: UUID,
     field_id: UUID,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -114,8 +112,8 @@ def list_crops(
 
     if field is None:
         raise HTTPException(
-        status_code=404,
-        detail="Field not found",
+            status_code=404,
+            detail="Field not found",
         )
 
     require_crop_access(
@@ -129,6 +127,7 @@ def list_crops(
         field_id,
     )
 
+
 @router.get(
     "/{crop_id}",
     response_model=CropResponse,
@@ -137,9 +136,7 @@ def get_crop(
     farm_id: UUID,
     field_id: UUID,
     crop_id: UUID,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -184,6 +181,7 @@ def get_crop(
 
     return crop
 
+
 @router.put(
     "/{crop_id}",
     response_model=CropResponse,
@@ -193,9 +191,7 @@ def update_crop_endpoint(
     field_id: UUID,
     crop_id: UUID,
     request: CropUpdate,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -238,15 +234,14 @@ def update_crop_endpoint(
         crop,
     )
 
-    values = request.model_dump(
-        exclude_unset=True
-    )
+    values = request.model_dump(exclude_unset=True)
 
     return update_field_crop(
         db=db,
         crop=crop,
         values=values,
     )
+
 
 @router.delete(
     "/{crop_id}",
@@ -256,9 +251,7 @@ def delete_crop_endpoint(
     farm_id: UUID,
     field_id: UUID,
     crop_id: UUID,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(

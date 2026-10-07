@@ -44,6 +44,7 @@ router = APIRouter(
     tags=["Authentication"],
 )
 
+
 @router.post(
     "/register",
     response_model=RegisterResponse,
@@ -104,13 +105,15 @@ def login(
         httponly=True,
         secure=settings.cookie_secure,
         samesite=settings.cookie_samesite,
-        max_age=(settings.refresh_token_expire_days * 24 * 60 * 60),path="/api/v1/auth",
+        max_age=(settings.refresh_token_expire_days * 24 * 60 * 60),
+        path="/api/v1/auth",
     )
 
     return TokenResponse(
         access_token=access_token,
         token_type="bearer",
     )
+
 
 @router.post(
     "/refresh",
@@ -125,15 +128,11 @@ def refresh(
     db: Session = Depends(get_db),
 ):
     if refresh_token is None:
-        raise InvalidRefreshTokenError(
-            "Refresh token is missing"
-        )
+        raise InvalidRefreshTokenError("Refresh token is missing")
 
-    access_token, new_refresh_token = (
-        refresh_access_token(
-            db,
-            refresh_token,
-        )
+    access_token, new_refresh_token = refresh_access_token(
+        db,
+        refresh_token,
     )
 
     response.set_cookie(
@@ -151,6 +150,7 @@ def refresh(
         token_type="bearer",
     )
 
+
 @router.post("/logout")
 def logout(
     response: Response,
@@ -161,9 +161,7 @@ def logout(
     db: Session = Depends(get_db),
 ):
     if refresh_token:
-        token_hash = hash_refresh_token(
-            refresh_token
-        )
+        token_hash = hash_refresh_token(refresh_token)
 
         session = get_refresh_session_by_token_hash(
             db,
@@ -171,9 +169,7 @@ def logout(
         )
 
         if session and session.revoked_at is None:
-            session.revoked_at = datetime.now(
-                timezone.utc
-            )
+            session.revoked_at = datetime.now(timezone.utc)
             db.commit()
 
     response.delete_cookie(
@@ -181,24 +177,21 @@ def logout(
         path="/api/v1/auth",
     )
 
-    return {
-        "message": "Logged out successfully"
-    }
+    return {"message": "Logged out successfully"}
+
 
 @router.post("/logout-all")
 def logout_all(
     response: Response,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
 
     sessions = get_active_refresh_sessions_for_user(
-    db,
-    current_user.id,
-)
-    
+        db,
+        current_user.id,
+    )
+
     now = datetime.now(timezone.utc)
 
     for session in sessions:
@@ -206,12 +199,9 @@ def logout_all(
 
     db.commit()
 
-
     response.delete_cookie(
-    key=settings.refresh_cookie_name,
-    path="/api/v1/auth",
-)
+        key=settings.refresh_cookie_name,
+        path="/api/v1/auth",
+    )
 
-    return {
-    "message": "All sessions have been logged out"
-}
+    return {"message": "All sessions have been logged out"}

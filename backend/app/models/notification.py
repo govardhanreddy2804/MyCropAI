@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from app.models.alert import Alert
     from app.models.user import User
 
+
 class Notification(Base):
     __tablename__ = "notifications"
 
@@ -79,9 +80,9 @@ class Notification(Base):
     )
 
     user: Mapped["User"] = relationship(
-    back_populates="notifications",
+        back_populates="notifications",
     )
 
     alert: Mapped["Alert"] = relationship(
-    back_populates="notifications",
+        back_populates="notifications",
     )

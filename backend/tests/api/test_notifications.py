@@ -48,6 +48,7 @@ def create_test_alert(db_session, authenticated_client):
 
     return alert
 
+
 def create_test_notification(
     db_session,
     authenticated_client,
@@ -86,9 +87,7 @@ def test_list_notifications(
         authenticated_client,
     )
 
-    response = authenticated_client.get(
-        "/api/v1/notifications"
-    )
+    response = authenticated_client.get("/api/v1/notifications")
 
     assert response.status_code == 200
 
@@ -97,18 +96,12 @@ def test_list_notifications(
     assert isinstance(data, list)
 
     notification_data = next(
-        item
-        for item in data
-        if item["id"] == str(notification.id)
+        item for item in data if item["id"] == str(notification.id)
     )
 
     assert notification_data["id"] == str(notification.id)
-    assert notification_data["user_id"] == str(
-        authenticated_client.user.id
-    )
-    assert notification_data["alert_id"] == str(
-        notification.alert_id
-    )
+    assert notification_data["user_id"] == str(authenticated_client.user.id)
+    assert notification_data["alert_id"] == str(notification.alert_id)
     assert notification_data["channel"] == "in_app"
     assert notification_data["status"] == "pending"
     assert notification_data["title"] == "Irrigation Required"

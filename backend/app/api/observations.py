@@ -37,6 +37,7 @@ router = APIRouter(
 # CREATE OBSERVATION
 # ============================================================
 
+
 @router.post(
     "/{farm_id}/fields/{field_id}/observations",
     response_model=ObservationResponse,
@@ -92,6 +93,7 @@ def create_observation(
 # LIST OBSERVATIONS
 # ============================================================
 
+
 @router.get(
     "/{farm_id}/fields/{field_id}/observations",
     response_model=list[ObservationResponse],
@@ -139,6 +141,7 @@ def list_observations(
 # BEST OBSERVATIONS
 # IMPORTANT: This MUST come before /{observation_id}
 # ============================================================
+
 
 @router.get(
     "/{farm_id}/fields/{field_id}/observations/best",
@@ -188,6 +191,7 @@ def get_best_observations(
 # ============================================================
 # DELETE OBSERVATION
 # ============================================================
+
 
 @router.delete(
     "/{farm_id}/fields/{field_id}/observations/{observation_id}",

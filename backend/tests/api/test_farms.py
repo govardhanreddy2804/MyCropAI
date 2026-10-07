@@ -89,9 +89,7 @@ def test_require_farm_access_raises_403():
 def test_list_farms_requires_authentication(
     client,
 ):
-    response = client.get(
-        "/api/v1/farms"
-    )
+    response = client.get("/api/v1/farms")
 
     assert response.status_code == 401
 
@@ -116,9 +114,8 @@ def test_create_farm(
     assert data["name"] == "Green Valley"
     assert data["area"] == 5.5
 
-    assert data["owner_id"] == str(
-        authenticated_client.user.id
-    )
+    assert data["owner_id"] == str(authenticated_client.user.id)
+
 
 def test_create_farm_cannot_set_owner_id(
     authenticated_client,
@@ -140,11 +137,10 @@ def test_create_farm_cannot_set_owner_id(
 
     data = response.json()
 
-    assert data["owner_id"] == str(
-        authenticated_client.user.id
-    )
+    assert data["owner_id"] == str(authenticated_client.user.id)
 
     assert data["owner_id"] != fake_owner_id
+
 
 def test_update_own_farm(
     authenticated_client,
@@ -213,15 +209,11 @@ def test_delete_own_farm(
 
     farm = create_response.json()
 
-    delete_response = authenticated_client.client.delete(
-        f"/api/v1/farms/{farm['id']}"
-    )
+    delete_response = authenticated_client.client.delete(f"/api/v1/farms/{farm['id']}")
 
     assert delete_response.status_code == 204
 
-    get_response = authenticated_client.client.get(
-        f"/api/v1/farms/{farm['id']}"
-    )
+    get_response = authenticated_client.client.get(f"/api/v1/farms/{farm['id']}")
 
     assert get_response.status_code == 404
 
@@ -231,11 +223,10 @@ def test_delete_missing_farm(
 ):
     farm_id = uuid4()
 
-    response = authenticated_client.client.delete(
-        f"/api/v1/farms/{farm_id}"
-    )
+    response = authenticated_client.client.delete(f"/api/v1/farms/{farm_id}")
 
     assert response.status_code == 404
+
 
 def test_farmer_cannot_update_another_farm(
     authenticated_client,
@@ -264,6 +255,7 @@ def test_farmer_cannot_update_another_farm(
 
     assert response.status_code == 403
 
+
 def test_farmer_cannot_delete_another_farm(
     authenticated_client,
     second_authenticated_client,
@@ -282,11 +274,10 @@ def test_farmer_cannot_delete_another_farm(
 
     farm = create_response.json()
 
-    response = second_authenticated_client.delete(
-        f"/api/v1/farms/{farm['id']}"
-    )
+    response = second_authenticated_client.delete(f"/api/v1/farms/{farm['id']}")
 
     assert response.status_code == 403
+
 
 def test_create_field(
     authenticated_client,
@@ -323,6 +314,7 @@ def test_create_field(
     assert data["farm_id"] == farm["id"]
     assert data["area"] == 2.5
 
+
 def test_list_fields(
     authenticated_client,
 ):
@@ -354,9 +346,7 @@ def test_list_fields(
         },
     )
 
-    response = authenticated_client.get(
-        f"/api/v1/farms/{farm['id']}/fields"
-    )
+    response = authenticated_client.get(f"/api/v1/farms/{farm['id']}/fields")
 
     assert response.status_code == 200
 
@@ -365,6 +355,7 @@ def test_list_fields(
     assert len(data) == 2
     assert data[0]["name"] == "Field A"
     assert data[1]["name"] == "Field B"
+
 
 def test_get_field(
     authenticated_client,
@@ -396,6 +387,7 @@ def test_get_field(
 
     assert response.status_code == 200
     assert response.json()["id"] == field["id"]
+
 
 def test_update_field(
     authenticated_client,
@@ -436,6 +428,7 @@ def test_update_field(
     assert data["name"] == "Updated Field"
     assert data["area"] == 2.5
 
+
 def test_delete_field(
     authenticated_client,
 ):
@@ -471,6 +464,7 @@ def test_delete_field(
     )
 
     assert get_response.status_code == 404
+
 
 def test_farmer_cannot_access_another_farm_field(
     authenticated_client,
@@ -547,6 +541,7 @@ def test_create_crop(
     assert data["field_id"] == field["id"]
     assert data["status"] == "planned"
 
+
 def test_list_crops(
     authenticated_client,
 ):
@@ -592,6 +587,7 @@ def test_list_crops(
     assert data[0]["crop_type"] == "Rice"
     assert data[1]["crop_type"] == "Wheat"
 
+
 def test_get_crop(
     authenticated_client,
 ):
@@ -632,6 +628,7 @@ def test_get_crop(
 
     assert response.status_code == 200
     assert response.json()["id"] == crop["id"]
+
 
 def test_update_crop(
     authenticated_client,
@@ -682,6 +679,7 @@ def test_update_crop(
     assert data["crop_type"] == "Wheat"
     assert data["status"] == "active"
 
+
 def test_delete_crop(
     authenticated_client,
 ):
@@ -728,6 +726,7 @@ def test_delete_crop(
 
     assert get_response.status_code == 404
 
+
 def test_farmer_cannot_access_another_farm_crop(
     authenticated_client,
     second_authenticated_client,
@@ -768,6 +767,7 @@ def test_farmer_cannot_access_another_farm_crop(
     )
 
     assert response.status_code == 403
+
 
 def test_get_farm_overview(
     authenticated_client,
@@ -838,9 +838,7 @@ def test_get_farm_overview(
 
     assert crop_response.status_code == 201
 
-    response = authenticated_client.get(
-        f"/api/v1/farms/{farm['id']}/overview"
-    )
+    response = authenticated_client.get(f"/api/v1/farms/{farm['id']}/overview")
 
     assert response.status_code == 200
 
@@ -866,9 +864,6 @@ def test_get_farm_overview(
     assert data["fields"][1]["crops"][0]["crop_type"] == "Maize"
 
 
-
-
-
 def test_farmer_cannot_access_another_farm_overview(
     authenticated_client,
     second_authenticated_client,
@@ -886,9 +881,7 @@ def test_farmer_cannot_access_another_farm_overview(
 
     farm = farm_response.json()
 
-    response = second_authenticated_client.get(
-        f"/api/v1/farms/{farm['id']}/overview"
-    )
+    response = second_authenticated_client.get(f"/api/v1/farms/{farm['id']}/overview")
 
     assert response.status_code == 403
 
@@ -898,9 +891,7 @@ def test_get_missing_farm_overview(
 ):
     farm_id = uuid4()
 
-    response = authenticated_client.get(
-        f"/api/v1/farms/{farm_id}/overview"
-    )
+    response = authenticated_client.get(f"/api/v1/farms/{farm_id}/overview")
 
     assert response.status_code == 404
 
@@ -921,9 +912,7 @@ def test_farm_overview_with_no_fields(
 
     farm = farm_response.json()
 
-    response = authenticated_client.get(
-        f"/api/v1/farms/{farm['id']}/overview"
-    )
+    response = authenticated_client.get(f"/api/v1/farms/{farm['id']}/overview")
 
     assert response.status_code == 200
 
@@ -962,9 +951,7 @@ def test_farm_overview_with_field_without_crops(
 
     assert field_response.status_code == 201
 
-    response = authenticated_client.get(
-        f"/api/v1/farms/{farm['id']}/overview"
-    )
+    response = authenticated_client.get(f"/api/v1/farms/{farm['id']}/overview")
 
     assert response.status_code == 200
 

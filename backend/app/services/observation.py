@@ -17,6 +17,7 @@ from app.services.observation_resolver import (
     resolve_best_observations,
 )
 
+
 def create_field_observation(
     db: Session,
     field_id: UUID,
@@ -83,6 +84,7 @@ def delete_field_observation(
 
     db.commit()
 
+
 def get_best_field_observations(
     db: Session,
     field_id: UUID,
@@ -92,6 +94,4 @@ def get_best_field_observations(
         field_id=field_id,
     )
 
-    return resolve_best_observations(
-        observations
-    )
+    return resolve_best_observations(observations)

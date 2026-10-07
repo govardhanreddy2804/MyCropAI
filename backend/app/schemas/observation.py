@@ -29,6 +29,4 @@ class ObservationResponse(BaseModel):
     observed_at: datetime
     confidence: float | None
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}

@@ -52,10 +52,7 @@ def read_notification(
         notification_id,
     )
 
-    if (
-        notification is None
-        or notification.user_id != current_user.id
-    ):
+    if notification is None or notification.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Notification not found",

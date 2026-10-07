@@ -23,10 +23,7 @@ def get_farm_overview_service(
 
     field_count = len(farm.fields)
 
-    crop_count = sum(
-        len(field.crops)
-        for field in farm.fields
-    )
+    crop_count = sum(len(field.crops) for field in farm.fields)
 
     return {
         "id": farm.id,

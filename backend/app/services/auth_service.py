@@ -30,6 +30,7 @@ from app.repositories.user import (
     get_user_by_id,
 )
 
+
 def register_user(
     db: Session,
     name: str,
@@ -43,9 +44,7 @@ def register_user(
     )
 
     if existing_user:
-        raise UserAlreadyExistsError(
-            "A user with this email already exists"
-        )
+        raise UserAlreadyExistsError("A user with this email already exists")
 
     password_hash = hash_password(password)
 
@@ -66,9 +65,8 @@ def register_user(
     except IntegrityError:
         db.rollback()
 
-        raise UserAlreadyExistsError(
-            "A user with this email already exists"
-        ) from None
+        raise UserAlreadyExistsError("A user with this email already exists") from None
+
 
 def authenticate_user(
     db: Session,
@@ -82,24 +80,19 @@ def authenticate_user(
     )
 
     if user is None:
-        raise InvalidCredentialsError(
-            "Invalid email or password"
-        )
+        raise InvalidCredentialsError("Invalid email or password")
 
     if not user.is_active:
-        raise InvalidCredentialsError(
-            "Invalid email or password"
-        )
+        raise InvalidCredentialsError("Invalid email or password")
 
     if not verify_password(
         password,
         user.password_hash,
     ):
-        raise InvalidCredentialsError(
-            "Invalid email or password"
-        )
+        raise InvalidCredentialsError("Invalid email or password")
 
     return user
+
 
 def create_refresh_session_for_user(
     db: Session,
@@ -108,15 +101,10 @@ def create_refresh_session_for_user(
 
     raw_token = generate_refresh_token()
 
-    token_hash = hash_refresh_token(
-        raw_token
-    )
+    token_hash = hash_refresh_token(raw_token)
 
-    expires_at = (
-        datetime.now(timezone.utc)
-        + timedelta(
-            days=settings.refresh_token_expire_days
-        )
+    expires_at = datetime.now(timezone.utc) + timedelta(
+        days=settings.refresh_token_expire_days
     )
 
     session = RefreshSession(
@@ -138,9 +126,7 @@ def refresh_access_token(
     refresh_token: str,
 ):
 
-    token_hash = hash_refresh_token(
-        refresh_token
-    )
+    token_hash = hash_refresh_token(refresh_token)
 
     session = get_refresh_session_by_token_hash(
         db,
@@ -148,21 +134,13 @@ def refresh_access_token(
     )
 
     if session is None:
-        raise InvalidRefreshTokenError(
-            "Invalid refresh token"
-        )
+        raise InvalidRefreshTokenError("Invalid refresh token")
 
     if session.revoked_at is not None:
-        raise RefreshTokenReuseError(
-            "Refresh token has already been used"
-        )
+        raise RefreshTokenReuseError("Refresh token has already been used")
 
-    if session.expires_at <= datetime.now(
-        timezone.utc
-    ):
-        raise InvalidRefreshTokenError(
-            "Refresh token has expired"
-        )
+    if session.expires_at <= datetime.now(timezone.utc):
+        raise InvalidRefreshTokenError("Refresh token has expired")
 
     user = get_user_by_id(
         db,
@@ -170,9 +148,7 @@ def refresh_access_token(
     )
 
     if user is None or not user.is_active:
-        raise InvalidRefreshTokenError(
-            "Invalid refresh token"
-        )
+        raise InvalidRefreshTokenError("Invalid refresh token")
 
     access_token = create_access_token(
         user_id=str(user.id),
@@ -181,18 +157,14 @@ def refresh_access_token(
 
     new_raw_token = generate_refresh_token()
 
-    new_token_hash = hash_refresh_token(
-        new_raw_token
-    )
+    new_token_hash = hash_refresh_token(new_raw_token)
 
     new_session = RefreshSession(
         user_id=user.id,
         token_hash=new_token_hash,
         expires_at=(
             datetime.now(timezone.utc)
-            + timedelta(
-                days=settings.refresh_token_expire_days
-            )
+            + timedelta(days=settings.refresh_token_expire_days)
         ),
     )
 
@@ -202,9 +174,7 @@ def refresh_access_token(
             new_session,
         )
 
-        session.revoked_at = datetime.now(
-            timezone.utc
-        )
+        session.revoked_at = datetime.now(timezone.utc)
 
         session.replaced_by_id = new_session.id
 

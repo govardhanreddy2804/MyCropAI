@@ -7,16 +7,16 @@ from app.core.exceptions import (
     InvalidCredentialsError,
 )
 
+
 async def user_already_exists_handler(
     request: Request,
     exc: UserAlreadyExistsError,
 ):
     return JSONResponse(
         status_code=409,
-        content={
-            "detail": str(exc)
-        },
+        content={"detail": str(exc)},
     )
+
 
 async def invalid_credentials_handler(
     request: Request,
@@ -24,10 +24,6 @@ async def invalid_credentials_handler(
 ):
     return JSONResponse(
         status_code=401,
-        content={
-            "detail": str(exc)
-        },
-        headers={
-            "WWW-Authenticate": "Bearer"
-        },
+        content={"detail": str(exc)},
+        headers={"WWW-Authenticate": "Bearer"},
     )

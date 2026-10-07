@@ -54,10 +54,7 @@ def test_rainfall_reduces_required_water():
         soil_type="loamy",
     )
 
-    assert (
-        with_rain.water_required_liters
-        < without_rain.water_required_liters
-    )
+    assert with_rain.water_required_liters < without_rain.water_required_liters
 
 
 def test_missing_soil_moisture_does_not_trigger_irrigation():

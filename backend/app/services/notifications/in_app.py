@@ -7,10 +7,7 @@ from app.services.notifications.provider import (
 )
 
 
-class InAppNotificationProvider(
-    NotificationProvider
-):
-
+class InAppNotificationProvider(NotificationProvider):
     def send(
         self,
         notification: Notification,
@@ -18,9 +15,7 @@ class InAppNotificationProvider(
 
         now = datetime.now(timezone.utc)
 
-        notification.status = (
-            NotificationStatus.DELIVERED
-        )
+        notification.status = NotificationStatus.DELIVERED
 
         notification.delivered_at = now
 

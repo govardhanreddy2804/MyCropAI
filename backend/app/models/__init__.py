@@ -6,6 +6,7 @@ from app.models.crop import Crop
 from app.models.observation import AgriculturalObservation
 from app.models.alert import Alert
 from app.models.notification import Notification
+from app.models.notification_preference import NotificationPreference
 
 __all__ = [
     "User",
@@ -14,4 +15,7 @@ __all__ = [
     "Field",
     "Crop",
     "AgriculturalObservation",
+    "Alert",
+    "Notification",
+    "NotificationPreference",
 ]

@@ -5,7 +5,6 @@ from app.services.weather.base import WeatherData
 
 
 class WeatherProvider(ABC):
-
     @abstractmethod
     def get_current_weather(
         self,

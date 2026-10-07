@@ -29,10 +29,7 @@ def make_observation(
         value=25,
         unit="percent",
         source=ObservationSource.MANUAL,
-        observed_at=(
-            observed_at
-            or datetime.now(timezone.utc)
-        ),
+        observed_at=(observed_at or datetime.now(timezone.utc)),
         confidence=confidence,
     )
 

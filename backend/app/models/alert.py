@@ -127,6 +127,6 @@ class Alert(Base):
     )
 
     notifications: Mapped[list["Notification"]] = relationship(
-    back_populates="alert",
-    cascade="all, delete-orphan",
-)
+        back_populates="alert",
+        cascade="all, delete-orphan",
+    )

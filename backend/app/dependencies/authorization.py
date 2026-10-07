@@ -4,12 +4,11 @@ from app.models.enums import UserRole
 from app.models.user import User
 from app.dependencies.auth import get_current_user
 
+
 def require_role(*allowed_roles: UserRole):
 
     def role_checker(
-        current_user: User = Depends(
-            get_current_user
-        ),
+        current_user: User = Depends(get_current_user),
     ) -> User:
 
         if current_user.role not in allowed_roles:

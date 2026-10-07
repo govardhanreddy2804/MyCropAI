@@ -32,6 +32,7 @@ router = APIRouter(
     tags=["Fields"],
 )
 
+
 @router.post(
     "",
     response_model=FieldResponse,
@@ -40,9 +41,7 @@ router = APIRouter(
 def create_field_endpoint(
     farm_id: UUID,
     request: FieldCreate,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -77,9 +76,7 @@ def create_field_endpoint(
 )
 def list_fields(
     farm_id: UUID,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -103,6 +100,7 @@ def list_fields(
         farm_id,
     )
 
+
 @router.get(
     "/{field_id}",
     response_model=FieldResponse,
@@ -110,9 +108,7 @@ def list_fields(
 def get_field(
     farm_id: UUID,
     field_id: UUID,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -144,6 +140,7 @@ def get_field(
 
     return field
 
+
 @router.put(
     "/{field_id}",
     response_model=FieldResponse,
@@ -152,9 +149,7 @@ def update_field_endpoint(
     farm_id: UUID,
     field_id: UUID,
     request: FieldUpdate,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
@@ -184,15 +179,14 @@ def update_field_endpoint(
             detail="Field not found",
         )
 
-    values = request.model_dump(
-        exclude_unset=True
-    )
+    values = request.model_dump(exclude_unset=True)
 
     return update_farm_field(
         db=db,
         field=field,
         values=values,
     )
+
 
 @router.delete(
     "/{field_id}",
@@ -201,9 +195,7 @@ def update_field_endpoint(
 def delete_field_endpoint(
     farm_id: UUID,
     field_id: UUID,
-    current_user: User = Depends(
-        get_current_user
-    ),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     farm = get_farm_by_id(
