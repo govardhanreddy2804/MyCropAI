@@ -11,7 +11,6 @@ from app.repositories.farm import get_farm_by_id
 from app.schemas.farm_overview import FarmOverviewResponse
 from app.services.farm_overview import get_farm_overview_service
 
-
 router = APIRouter(
     prefix="/api/v1/farms",
     tags=["Farm Digital Twin"],

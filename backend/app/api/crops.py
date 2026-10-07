@@ -5,28 +5,22 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.auth import get_current_user
 from app.dependencies.database import get_db
-
 from app.models.user import User
-
 from app.policies.crop_policy import require_crop_access
-
 from app.repositories.crop import get_crop_by_id
 from app.repositories.farm import get_farm_by_id
 from app.repositories.field import get_field_by_id
-
 from app.schemas.crop import (
     CropCreate,
     CropResponse,
     CropUpdate,
 )
-
 from app.services.crop_service import (
     create_field_crop,
     delete_field_crop,
     get_field_crops,
     update_field_crop,
 )
-
 
 router = APIRouter(
     prefix="/api/v1/farms/{farm_id}/fields/{field_id}/crops",
@@ -298,5 +292,3 @@ def delete_crop_endpoint(
         db=db,
         crop=crop,
     )
-
-    return None

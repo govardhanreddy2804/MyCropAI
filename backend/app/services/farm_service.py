@@ -6,7 +6,6 @@ from app.models.farm import Farm
 from app.repositories.farm import (
     create_farm,
     delete_farm,
-    get_farm_by_id,
     get_farms_by_owner,
     update_farm,
 )

@@ -1,10 +1,9 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from app.core.exceptions import UserAlreadyExistsError
-
 from app.core.exceptions import (
     InvalidCredentialsError,
+    UserAlreadyExistsError,
 )
 
 

@@ -1,7 +1,6 @@
 from uuid import UUID
 
-from app.services.weather.factory import get_weather_provider
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.dependencies.auth import get_current_user
@@ -10,9 +9,11 @@ from app.models.user import User
 from app.policies.farm_policy import require_farm_access
 from app.repositories.farm import get_farm_by_id
 from app.repositories.field import get_field_by_id
-from app.services.weather.openweather import OpenWeatherProvider
+from app.schemas.task import BackgroundTaskResponse
+from app.services.tasks.runner import TaskRunner
+from app.services.tasks.weather import sync_field_weather
+from app.services.weather.factory import get_weather_provider
 from app.services.weather.service import ingest_current_weather
-
 
 router = APIRouter(
     prefix="/api/v1/farms/{farm_id}/fields/{field_id}/weather",
@@ -86,3 +87,59 @@ def fetch_current_weather(
     db.commit()
 
     return observations
+
+
+@router.post(
+    "/sync",
+    response_model=BackgroundTaskResponse,
+    status_code=202,
+)
+def sync_weather(
+    farm_id: UUID,
+    field_id: UUID,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    farm = get_farm_by_id(
+        db=db,
+        farm_id=farm_id,
+    )
+
+    if farm is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Farm not found",
+        )
+
+    require_farm_access(
+        current_user,
+        farm,
+    )
+
+    field = get_field_by_id(
+        db=db,
+        field_id=field_id,
+    )
+
+    if field is None or field.farm_id != farm.id:
+        raise HTTPException(
+            status_code=404,
+            detail="Field not found",
+        )
+
+    if field.latitude is None or field.longitude is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Field coordinates are required for weather synchronization",
+        )
+
+    TaskRunner(background_tasks).add_task(
+        sync_field_weather,
+        field_id,
+    )
+
+    return BackgroundTaskResponse(
+        accepted=True,
+        message="Weather synchronization task accepted",
+    )

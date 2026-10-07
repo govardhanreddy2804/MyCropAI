@@ -1,31 +1,25 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.dependencies.auth import get_current_user
 from app.dependencies.database import get_db
-
 from app.models.user import User
-
 from app.policies.farm_policy import require_farm_access
-
 from app.repositories.farm import get_farm_by_id
 from app.repositories.field import get_field_by_id
 from app.repositories.observation import get_observation_by_id
-
 from app.schemas.observation import (
     ObservationCreate,
     ObservationResponse,
 )
-
 from app.services.observation import (
     create_field_observation,
     delete_field_observation,
     get_best_field_observations,
     get_field_observations,
 )
-
 
 router = APIRouter(
     prefix="/api/v1/farms",
@@ -246,5 +240,3 @@ def delete_observation(
         db=db,
         observation_id=observation_id,
     )
-
-    return None

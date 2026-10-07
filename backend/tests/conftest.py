@@ -1,20 +1,15 @@
 import uuid
+from datetime import date
+from uuid import uuid4
 
-from app.models.user import User
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
-from app.database.base import Base
 from app.dependencies.database import get_db
 from app.main import app
-
-
-from datetime import date
-from uuid import uuid4
-
 from app.models.crop import Crop
 from app.models.enums import (
     AlertPriority,
@@ -23,7 +18,9 @@ from app.models.enums import (
 )
 from app.models.farm import Farm
 from app.models.field import Field
+from app.models.user import User
 from app.services.alert import create_or_get_alert
+
 # ---------------------------------------------------------
 # Test database
 # ---------------------------------------------------------
@@ -216,6 +213,7 @@ def second_authenticated_client(client):
         )(),
     )
 
+
 @pytest.fixture
 def test_user(authenticated_client, db_session):
     user = db_session.get(User, authenticated_client.user.id)
@@ -224,6 +222,7 @@ def test_user(authenticated_client, db_session):
         raise RuntimeError("Authenticated test user was not found")
 
     return user
+
 
 @pytest.fixture
 def irrigation_alert(db_session, test_user):
@@ -278,3 +277,39 @@ def irrigation_alert(db_session, test_user):
     db_session.commit()
 
     return alert
+
+@pytest.fixture
+def farm(db_session, test_user):
+    farm = Farm(
+        id=uuid4(),
+        owner_id=test_user.id,
+        name="Weather Test Farm",
+        location="Hyderabad",
+        area=10.0,
+        soil_type="Loamy",
+    )
+
+    db_session.add(farm)
+    db_session.commit()
+    db_session.refresh(farm)
+
+    return farm
+
+@pytest.fixture
+def field_with_coordinates(db_session, farm):
+    field = Field(
+        id=uuid4(),
+        farm_id=farm.id,
+        name="Weather Test Field",
+        area=5.0,
+        soil_type="Loamy",
+        location="Hyderabad",
+        latitude=17.3850,
+        longitude=78.4867,
+    )
+
+    db_session.add(field)
+    db_session.commit()
+    db_session.refresh(field)
+
+    return field

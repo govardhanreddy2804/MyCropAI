@@ -12,7 +12,6 @@ from app.models.enums import (
 from app.repositories.alert import (
     create_alert,
     get_active_alert_by_deduplication_key,
-    get_alert_by_id,
     get_alerts_by_farm,
     update_alert,
 )

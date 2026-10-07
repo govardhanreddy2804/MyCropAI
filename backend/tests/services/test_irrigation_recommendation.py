@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
+from app.models.crop import Crop
 from app.models.enums import (
     CropStatus,
     ObservationSource,
@@ -8,9 +9,8 @@ from app.models.enums import (
     UserRole,
 )
 from app.models.farm import Farm
-from app.models.crop import Crop
-from app.models.observation import AgriculturalObservation
 from app.models.field import Field
+from app.models.observation import AgriculturalObservation
 from app.models.user import User
 from app.services.irrigation.recommendation import (
     generate_irrigation_recommendation,

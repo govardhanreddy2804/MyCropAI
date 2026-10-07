@@ -9,8 +9,8 @@ from app.models.enums import (
     NotificationChannel,
     NotificationStatus,
 )
-from app.models.notification import Notification
 from app.models.farm import Farm
+from app.models.notification import Notification
 
 
 def create_test_alert(db_session, authenticated_client):

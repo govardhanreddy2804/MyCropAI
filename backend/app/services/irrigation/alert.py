@@ -3,7 +3,6 @@ from app.models.enums import (
     AlertType,
     NotificationChannel,
 )
-
 from app.services.alert import (
     create_or_get_alert,
 )

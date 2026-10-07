@@ -12,7 +12,6 @@ from app.repositories.observation import (
     get_observation_by_id,
     get_observations_by_field,
 )
-
 from app.services.observation_resolver import (
     resolve_best_observations,
 )

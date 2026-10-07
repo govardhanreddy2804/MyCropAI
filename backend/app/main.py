@@ -1,27 +1,26 @@
 from fastapi import FastAPI
 
-from app.api.root import router as root_router
-from app.api.health import router as health_router
 from app.api.about import router as about_router
-from app.api.users import router as users_router
+from app.api.alerts import router as alerts_router
 from app.api.auth import router as auth_router
-from app.api.farms import router as farms_router
-from app.api.fields import router as fields_router
 from app.api.crops import router as crops_router
 from app.api.farm_overview import router as farm_overview_router
-from app.api.observations import router as observations_router
-from app.api.weather import router as weather_router
+from app.api.farms import router as farms_router
+from app.api.fields import router as fields_router
+from app.api.health import router as health_router
 from app.api.irrigation import router as irrigation_router
-from app.api.alerts import router as alerts_router
-
-from app.core.exceptions import UserAlreadyExistsError
-from app.core.exception_handlers import (
-    user_already_exists_handler,
-)
+from app.api.notification_preferences import router as notification_preferences_router
 from app.api.notifications import (
     router as notifications_router,
 )
-from app.api.notification_preferences import router as notification_preferences_router
+from app.api.observations import router as observations_router
+from app.api.root import router as root_router
+from app.api.users import router as users_router
+from app.api.weather import router as weather_router
+from app.core.exception_handlers import (
+    user_already_exists_handler,
+)
+from app.core.exceptions import UserAlreadyExistsError
 
 app = FastAPI(
     title="MyCropAI API", version="1.0.0", description="Backend API for MyCropAI"

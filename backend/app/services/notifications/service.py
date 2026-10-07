@@ -14,7 +14,7 @@ from app.repositories.notification import (
     get_notification_for_alert_and_channel,
     update_notification,
 )
-from app.services.alert import get_alert_by_id
+
 from app.services.notification_preference import (
     is_channel_enabled,
 )

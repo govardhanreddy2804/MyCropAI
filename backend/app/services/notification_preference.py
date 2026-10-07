@@ -11,7 +11,6 @@ from app.repositories.notification_preference import (
     update_preference,
 )
 
-
 DEFAULT_CHANNEL_SETTINGS = {
     NotificationChannel.IN_APP: True,
     NotificationChannel.EMAIL: False,

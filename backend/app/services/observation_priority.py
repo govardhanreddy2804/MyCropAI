@@ -1,6 +1,5 @@
 from app.models.enums import ObservationSource, ObservationType
 
-
 SOURCE_PRIORITY: dict[
     ObservationType,
     dict[ObservationSource, int],

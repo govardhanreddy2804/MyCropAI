@@ -2,25 +2,24 @@ from datetime import datetime, timezone
 
 from app.models.enums import ObservationType
 from app.repositories.observation import get_observations_by_field
+from app.services.irrigation.alert import (
+    create_irrigation_alert,
+)
 from app.services.irrigation.calculator import (
     calculate_irrigation_requirement,
 )
 from app.services.irrigation.crop_profile import (
     get_crop_water_profile,
 )
-from app.services.observation_resolver import (
-    resolve_safe_current_observations,
+from app.services.irrigation.decision import (
+    determine_irrigation_decision,
 )
 from app.services.observation_quality import (
     ObservationQuality,
     classify_observation_quality,
 )
-from app.services.irrigation.decision import (
-    determine_irrigation_decision,
-)
-
-from app.services.irrigation.alert import (
-    create_irrigation_alert,
+from app.services.observation_resolver import (
+    resolve_safe_current_observations,
 )
 
 

@@ -16,7 +16,6 @@ from app.services.alert import (
     mark_alert_read,
 )
 
-
 router = APIRouter(
     prefix="/api/v1/farms/{farm_id}/alerts",
     tags=["Alerts"],

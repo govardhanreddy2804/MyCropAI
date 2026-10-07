@@ -3,7 +3,6 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.models.crop import Crop, CropStatus
-
 from app.repositories.crop import (
     create_crop,
     delete_crop,

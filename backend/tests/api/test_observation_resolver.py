@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from uuid import uuid4
 
 from app.models.enums import ObservationSource, ObservationType
 from app.models.observation import AgriculturalObservation
@@ -6,8 +7,6 @@ from app.services.observation_resolver import (
     resolve_best_observation,
     resolve_best_observations,
 )
-
-from uuid import uuid4
 
 
 def make_observation(

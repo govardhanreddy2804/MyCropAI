@@ -7,12 +7,10 @@ from app.models.enums import (
 )
 from app.models.observation import AgriculturalObservation
 from app.services.observation_quality import (
+    ObservationQuality,
     classify_observation_quality,
     get_observation_age_hours,
     is_observation_fresh,
-)
-from app.services.observation_quality import (
-    ObservationQuality,
 )
 
 

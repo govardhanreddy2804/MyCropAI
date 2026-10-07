@@ -14,24 +14,19 @@ from app.core.config import settings
 from app.core.exceptions import InvalidRefreshTokenError
 from app.core.jwt import create_access_token
 from app.core.tokens import hash_refresh_token
-
 from app.dependencies.auth import get_current_user
 from app.dependencies.database import get_db
-
 from app.models.user import User
-
 from app.repositories.refresh_session import (
-    get_refresh_session_by_token_hash,
     get_active_refresh_sessions_for_user,
+    get_refresh_session_by_token_hash,
 )
-
 from app.schemas.auth import (
     LoginRequest,
     RegisterRequest,
     RegisterResponse,
     TokenResponse,
 )
-
 from app.services.auth_service import (
     authenticate_user,
     create_refresh_session_for_user,

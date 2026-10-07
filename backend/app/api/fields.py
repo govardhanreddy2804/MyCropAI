@@ -5,27 +5,21 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.auth import get_current_user
 from app.dependencies.database import get_db
-
 from app.models.user import User
-
 from app.policies.farm_policy import require_farm_access
-
 from app.repositories.farm import get_farm_by_id
 from app.repositories.field import get_field_by_id
-
 from app.schemas.field import (
     FieldCreate,
     FieldResponse,
     FieldUpdate,
 )
-
 from app.services.field_service import (
     create_farm_field,
     delete_farm_field,
     get_farm_fields,
     update_farm_field,
 )
-
 
 router = APIRouter(
     prefix="/api/v1/farms/{farm_id}/fields",
@@ -229,5 +223,3 @@ def delete_field_endpoint(
         db=db,
         field=field,
     )
-
-    return None

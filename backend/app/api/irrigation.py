@@ -10,13 +10,12 @@ from app.policies.farm_policy import require_farm_access
 from app.repositories.crop import get_crop_by_id
 from app.repositories.farm import get_farm_by_id
 from app.repositories.field import get_field_by_id
-from app.services.irrigation.recommendation import (
-    generate_irrigation_recommendation,
-)
 from app.schemas.irrigation import (
     IrrigationRecommendationResponse,
 )
-
+from app.services.irrigation.recommendation import (
+    generate_irrigation_recommendation,
+)
 
 router = APIRouter(
     prefix="/api/v1/farms/{farm_id}/fields/{field_id}",

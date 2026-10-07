@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import APIRouter, Depends
+
 from app.dependencies.common import get_app_name
 
 router = APIRouter()

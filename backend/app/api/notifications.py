@@ -17,7 +17,6 @@ from app.services.notifications.service import (
     mark_notification_read,
 )
 
-
 router = APIRouter(
     prefix="/api/v1/notifications",
     tags=["Notifications"],

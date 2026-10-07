@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 
-from app.models.alert import Alert
 from app.models.crop import Crop
 from app.models.enums import (
     AlertPriority,

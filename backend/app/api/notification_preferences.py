@@ -14,7 +14,6 @@ from app.services.notification_preference import (
     set_user_preference,
 )
 
-
 router = APIRouter(
     prefix="/api/v1/notification-preferences",
     tags=["Notification Preferences"],

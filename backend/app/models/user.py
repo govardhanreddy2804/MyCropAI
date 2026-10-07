@@ -1,17 +1,13 @@
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from app.models.notification_preference import NotificationPreference
-from sqlalchemy import String, Boolean, DateTime
+from sqlalchemy import Boolean, DateTime, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
-
-from sqlalchemy import Enum
-
 from app.models.enums import UserRole
-
-from typing import TYPE_CHECKING
+from app.models.notification_preference import NotificationPreference
 
 if TYPE_CHECKING:
     from app.models.notification import Notification

@@ -3,7 +3,6 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.models.field import Field
-
 from app.repositories.field import (
     create_field,
     delete_field,
